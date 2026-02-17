@@ -1,4 +1,3 @@
-import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { useCharacterStore, useUIStore } from '../../stores/RootStore';
 import type { SheetTab } from '../../stores/UIStore';
@@ -40,7 +39,7 @@ export const CharacterSheet = observer(function CharacterSheet() {
       </div>
 
       {/* Tab row spanning both sidebar and main content */}
-      <div className="flex shrink-0">
+      <div className={`flex shrink-0 ${sidebarOpen ? 'gap-4' : 'gap-0'}`}>
         {/* Skills tab — aligned above sidebar */}
         <div className={`shrink-0 transition-all duration-200 flex items-end ${sidebarOpen ? 'w-72' : 'w-auto'}`}>
           <button
@@ -53,7 +52,7 @@ export const CharacterSheet = observer(function CharacterSheet() {
         </div>
 
         {/* Main content tabs */}
-        <div className="folder-tabs flex-1 min-w-0 pl-4">
+        <div className="folder-tabs flex-1 min-w-0">
           {TABS.map((t) => (
             <button
               key={t.key}
@@ -67,7 +66,7 @@ export const CharacterSheet = observer(function CharacterSheet() {
       </div>
 
       {/* Sidebar + folder content fill remaining height */}
-      <div className="flex gap-4 min-h-0 flex-1 pb-4">
+      <div className={`flex min-h-0 flex-1 pb-4 transition-all duration-200 ${sidebarOpen ? 'gap-4' : 'gap-0'}`}>
         {/* Collapsible sidebar */}
         <div className={`shrink-0 transition-all duration-200 overflow-y-auto ${sidebarOpen ? 'w-72' : 'w-0 overflow-hidden'}`}>
           <div className="w-72 space-y-4">

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useCharacterStore, useUIStore } from '../../../stores/RootStore';
 import { getAbilityModifier, getProficiencyBonus, formatModifier, ABILITY_SCORE_NAMES } from '../../../utils/characterUtils';
@@ -46,12 +46,15 @@ export const SpellsSection = observer(function SpellsSection() {
   const preparedCount = char.spells.filter((s) => s.level > 0 && s.prepared).length;
 
   // Group spells by level
-  const spellsByLevel = new Map<number, typeof char.spells>();
-  char.spells.forEach((spell) => {
-    const list = spellsByLevel.get(spell.level) ?? [];
-    list.push(spell);
-    spellsByLevel.set(spell.level, list);
-  });
+  const spellsByLevel = useMemo(() => {
+    const map = new Map<number, typeof char.spells>();
+    char.spells.forEach((spell) => {
+      const list = map.get(spell.level) ?? [];
+      list.push(spell);
+      map.set(spell.level, list);
+    });
+    return map;
+  }, [char.spells]);
 
   return (
     <>

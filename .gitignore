@@ -16,3 +16,12 @@ dist/
 .vscode/*
 !.vscode/extensions.json
 .idea
+
+# Env
+.env
+.env.local
+
+# Cache & build artifacts
+*.tsbuildinfo
+.eslintcache
+coverage/

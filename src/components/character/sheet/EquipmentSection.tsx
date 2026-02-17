@@ -68,6 +68,14 @@ export const EquipmentSection = observer(function EquipmentSection() {
     return <SortIcon active={equipSortKey === key} ascending={equipSortAsc} />;
   }
 
+  const totalGp = useMemo(() =>
+    char.currency.cp * 0.01 +
+    char.currency.sp * 0.1 +
+    char.currency.ep * 0.5 +
+    char.currency.gp +
+    char.currency.pp * 10,
+  [char.currency]);
+
   const filteredEquipment = useMemo(() => {
     let items = char.equipment;
     if (equipFilter) {
@@ -130,24 +138,16 @@ export const EquipmentSection = observer(function EquipmentSection() {
             ))}
           </div>
           <div className="flex-1" />
-          {(() => {
-            const totalGp =
-              char.currency.cp * 0.01 +
-              char.currency.sp * 0.1 +
-              char.currency.ep * 0.5 +
-              char.currency.gp +
-              char.currency.pp * 10;
-            return totalGp > 0 ? (
-              <div className="flex flex-col items-center justify-center p-2 bg-base-100 rounded-lg border border-base-300 min-w-20">
-                <span className="text-[10px] font-semibold uppercase text-base-content/60 mb-1">Total</span>
-                <div className="flex items-center gap-1">
-                  <CircleFill className="w-3 h-3 text-yellow-400" />
-                  <span className="font-bold text-sm">{totalGp.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}</span>
-                </div>
-                <span className="text-[10px] text-base-content/40">gp equiv.</span>
+          {totalGp > 0 && (
+            <div className="flex flex-col items-center justify-center p-2 bg-base-100 rounded-lg border border-base-300 min-w-20">
+              <span className="text-[10px] font-semibold uppercase text-base-content/60 mb-1">Total</span>
+              <div className="flex items-center gap-1">
+                <CircleFill className="w-3 h-3 text-yellow-400" />
+                <span className="font-bold text-sm">{totalGp.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}</span>
               </div>
-            ) : null;
-          })()}
+              <span className="text-[10px] text-base-content/40">gp equiv.</span>
+            </div>
+          )}
         </div>
       </SectionCard>
 

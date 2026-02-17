@@ -143,8 +143,8 @@ export class CharacterStore {
   private persist() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(toJS(this.characters)));
-    } catch {
-      // Storage full or unavailable
+    } catch (err) {
+      console.error('[CharacterStore] Failed to save characters:', err);
     }
   }
 
@@ -154,8 +154,8 @@ export class CharacterStore {
       if (data) {
         this.characters = JSON.parse(data);
       }
-    } catch {
-      // Invalid data
+    } catch (err) {
+      console.error('[CharacterStore] Failed to load characters:', err);
     }
   }
 }

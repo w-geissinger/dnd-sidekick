@@ -1,9 +1,10 @@
-import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { useCharacterStore } from '../../../stores/RootStore';
 import { SectionCard } from '../../shared/SectionCard';
 
-const FIELDS: { key: string; label: string; placeholder: string; minHeight: string }[] = [
+type DescriptionKey = 'personalityTraits' | 'ideals' | 'bonds' | 'flaws' | 'appearance' | 'alliesAndOrganizations' | 'backstory' | 'treasure' | 'additionalNotes';
+
+const FIELDS: { key: DescriptionKey; label: string; placeholder: string; minHeight: string }[] = [
   { key: 'personalityTraits', label: 'Personality Traits', placeholder: 'I am always polite and respectful...', minHeight: 'min-h-20' },
   { key: 'ideals', label: 'Ideals', placeholder: 'Respect. People deserve to be treated with dignity...', minHeight: 'min-h-20' },
   { key: 'bonds', label: 'Bonds', placeholder: 'I will do anything to protect the temple where I served...', minHeight: 'min-h-20' },
@@ -24,7 +25,7 @@ export const CharacterDescription = observer(function CharacterDescription() {
       {FIELDS.map((field) => (
         <SectionCard key={field.key} title={field.label} collapsible defaultOpen={true}>
           <textarea
-            value={(char as unknown as Record<string, unknown>)[field.key] as string ?? ''}
+            value={char[field.key]}
             onChange={(e) => characterStore.updateActiveCharacter({ [field.key]: e.target.value })}
             className={`textarea textarea-bordered w-full bg-base-100 focus:border-primary/50 ${field.minHeight}`}
             placeholder={field.placeholder}

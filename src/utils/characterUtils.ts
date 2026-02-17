@@ -4,6 +4,10 @@ export function generateId(): string {
   return crypto.randomUUID();
 }
 
+export function toSlugIndex(name: string): string {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+}
+
 export function getAbilityModifier(score: number): number {
   return Math.floor((score - 10) / 2);
 }

@@ -63,7 +63,9 @@ export class UIStore {
     this.applyTheme(theme);
     try {
       localStorage.setItem(THEME_KEY, theme);
-    } catch { /* ignore */ }
+    } catch (err) {
+      console.error('[UIStore] Failed to save theme:', err);
+    }
   }
 
   private applyTheme(theme: string) {
@@ -94,7 +96,9 @@ export class UIStore {
     }
     try {
       localStorage.setItem(SPELL_COLUMNS_KEY, JSON.stringify(this.spellColumns));
-    } catch { /* ignore */ }
+    } catch (err) {
+      console.error('[UIStore] Failed to save spell columns:', err);
+    }
   }
 
   toggleItemColumn(key: string) {
@@ -105,6 +109,8 @@ export class UIStore {
     }
     try {
       localStorage.setItem(ITEM_COLUMNS_KEY, JSON.stringify(this.itemColumns));
-    } catch { /* ignore */ }
+    } catch (err) {
+      console.error('[UIStore] Failed to save item columns:', err);
+    }
   }
 }

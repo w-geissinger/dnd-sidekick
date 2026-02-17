@@ -1,7 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useCharacterStore, useUIStore } from '../../stores/RootStore';
 import { searchSpells } from '../../services/referenceData';
+import { toSlugIndex } from '../../utils/characterUtils';
 import type { SpellEntry } from '../../types/dnd-data';
 import { SpellDetail } from './SpellDetail';
 import { SpellTable } from './SpellTable';
@@ -22,7 +23,7 @@ export const SpellSearchModal = observer(function SpellSearchModal({ levelFilter
   const charClass = char?.class ?? '';
 
   // Sync level filter when modal opens with a specific level
-  React.useEffect(() => {
+  useEffect(() => {
     if (uiStore.activeModal === 'spellSearch' && levelFilter !== null && levelFilter !== undefined) {
       setLevel(levelFilter);
     }
@@ -41,7 +42,7 @@ export const SpellSearchModal = observer(function SpellSearchModal({ levelFilter
   function addSpell(spell: SpellEntry) {
     const spellLevel = spell.properties.Level ?? 0;
     characterStore.addSpellToCharacter({
-      index: spell.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+      index: toSlugIndex(spell.name),
       name: spell.name,
       level: spellLevel,
       prepared: spellLevel === 0,
@@ -102,7 +103,7 @@ export const SpellSearchModal = observer(function SpellSearchModal({ levelFilter
               <h4 className="font-bold text-lg">{selectedSpell.name}</h4>
               <SpellDetail spell={selectedSpell} />
               {knownSpellIndices.has(
-                selectedSpell.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+                toSlugIndex(selectedSpell.name)
               ) ? (
                 <span className="badge badge-success">Already Known</span>
               ) : (
@@ -128,7 +129,7 @@ export const SpellSearchModal = observer(function SpellSearchModal({ levelFilter
                   onClickSpell={setSelectedSpell}
                   compact
                   renderActions={(spell) => {
-                    const idx = spell.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+                    const idx = toSlugIndex(spell.name);
                     const known = knownSpellIndices.has(idx);
                     return known ? (
                       <span className="badge badge-xs badge-success">Added</span>
