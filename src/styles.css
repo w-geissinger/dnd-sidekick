@@ -1,0 +1,92 @@
+@import "tailwindcss";
+@plugin "daisyui" {
+  themes: light, dark, cupcake, bumblebee, emerald, corporate,
+    synthwave, retro, cyberpunk, valentine, halloween,
+    garden, forest, aqua, lofi, pastel, fantasy,
+    wireframe, black, luxury, dracula, cmyk, autumn,
+    business, acid, lemonade, night, coffee, winter,
+    dim, nord, sunset;
+}
+
+/* Cleaner number input spinners: larger, flush to edges */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* Manila folder tabs */
+.folder-tabs {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  padding-left: 4px;
+}
+
+.folder-tab {
+  padding: 0.4rem 1.2rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--color-base-300);
+  border-bottom: none;
+  border-radius: 0.5rem 0.5rem 0 0;
+  background: var(--color-base-200);
+  color: var(--color-base-content);
+  opacity: 0.7;
+  position: relative;
+  bottom: -1px;
+  transition: opacity 0.15s, background 0.15s;
+}
+
+.folder-tab:hover {
+  opacity: 0.9;
+  background: var(--color-base-100);
+}
+
+.folder-tab.folder-tab-active {
+  background: var(--color-base-100);
+  opacity: 1;
+  font-weight: 600;
+  z-index: 1;
+  border-bottom: 1px solid var(--color-base-100);
+}
+
+/* Side drawer tab — looks like a tab opening to the left */
+.side-tab {
+  padding: 0.4rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--color-base-300);
+  border-bottom: none;
+  border-radius: 0.5rem 0.5rem 0 0;
+  background: var(--color-base-200);
+  color: var(--color-base-content);
+  opacity: 0.7;
+  transition: opacity 0.15s, background 0.15s;
+}
+
+.side-tab:hover {
+  opacity: 0.9;
+  background: var(--color-base-100);
+}
+
+.side-tab.side-tab-active {
+  background: var(--color-base-100);
+  opacity: 1;
+  font-weight: 600;
+}
+
+.folder-panel {
+  border: 1px solid var(--color-base-300);
+  border-radius: 0 0.5rem 0.5rem 0.5rem;
+  background: var(--color-base-100);
+  padding: 1rem;
+}
