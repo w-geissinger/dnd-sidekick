@@ -108,14 +108,14 @@ export const EquipmentSection = observer(function EquipmentSection() {
               { key: 'gp' as const, label: 'GP', color: 'text-yellow-400' },
               { key: 'pp' as const, label: 'PP', color: 'text-cyan-200' },
             ]).map(({ key, label, color }) => (
-              <div key={key} className="flex flex-col items-center justify-center p-1.5 bg-base-100 rounded-lg border border-base-300 w-20">
+              <div key={key} className="flex flex-col items-center justify-center p-1.5 bg-base-100 rounded-lg border border-base-300 w-20 group">
                 <div className="flex items-center gap-1.5 mb-1">
                   <CircleFill className={`w-3 h-3 ${color}`} />
                   <span className="text-[10px] font-semibold uppercase text-base-content/60">{label}</span>
                 </div>
-                <div className="flex items-stretch rounded border border-base-300 overflow-hidden">
+                <div className="flex items-stretch rounded border border-transparent group-hover:border-base-300 overflow-hidden transition-colors">
                   <button
-                    className="px-1 py-0.5 bg-base-300 hover:bg-base-content/20 text-xs font-bold leading-none"
+                    className="px-1 py-0.5 bg-base-300 hover:bg-base-content/20 text-xs font-bold leading-none opacity-0 group-hover:opacity-100 transition-opacity"
                     onClick={() => updateCurrency(key, Math.max(0, char.currency[key] - 1))}
                   >
                     −
@@ -125,10 +125,10 @@ export const EquipmentSection = observer(function EquipmentSection() {
                     min={0}
                     value={char.currency[key]}
                     onChange={(e) => updateCurrency(key, parseInt(e.target.value) || 0)}
-                    className="w-8 text-center text-sm font-semibold bg-base-100 border-x border-base-300 focus:outline-none py-0.5"
+                    className="w-8 text-center text-sm font-semibold bg-base-100 border-x border-transparent group-hover:border-base-300 focus:outline-none py-0.5"
                   />
                   <button
-                    className="px-1 py-0.5 bg-base-300 hover:bg-base-content/20 text-xs font-bold leading-none"
+                    className="px-1 py-0.5 bg-base-300 hover:bg-base-content/20 text-xs font-bold leading-none opacity-0 group-hover:opacity-100 transition-opacity"
                     onClick={() => updateCurrency(key, char.currency[key] + 1)}
                   >
                     +

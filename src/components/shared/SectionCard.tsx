@@ -12,7 +12,7 @@ export function SectionCard({ title, action, collapsible, defaultOpen = true, ch
   const [open, setOpen] = useState(defaultOpen);
 
   return (
-    <div className="card bg-base-200 shadow-sm overflow-hidden">
+    <div className="card bg-base-200 shadow-sm">
       <div className="card-body p-4">
         <div className="flex items-center justify-between">
           <h3

@@ -190,7 +190,7 @@ export function SpellTable({
                   />
                 </th>
               ))}
-              {renderActions && <th style={{ width: 64 }}></th>}
+              {renderActions && <th className="sticky right-0 bg-base-200 border-l border-base-300" style={{ width: 64 }}></th>}
             </tr>
           </thead>
           <tbody>
@@ -210,7 +210,7 @@ export function SpellTable({
                   </td>
                 ))}
                 {renderActions && (
-                  <td onClick={(e) => e.stopPropagation()}>
+                  <td className="sticky right-0 bg-base-100 border-l border-base-300" onClick={(e) => e.stopPropagation()}>
                     {renderActions(spell)}
                   </td>
                 )}

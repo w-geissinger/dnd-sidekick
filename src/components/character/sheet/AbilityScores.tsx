@@ -26,15 +26,15 @@ export const AbilityScores = observer(function AbilityScores() {
         return (
           <div
             key={ability}
-            className="flex flex-col items-center p-3 bg-base-200 rounded-xl border border-base-300 hover:border-primary/30 transition-colors"
+            className="flex flex-col items-center p-3 bg-base-200 rounded-xl border border-base-300 hover:border-primary/30 transition-colors group"
           >
             <span className="text-[10px] font-bold uppercase tracking-widest text-base-content/50">
               {ABILITY_SCORE_NAMES[ability]}
             </span>
             <span className={`text-2xl font-bold mt-1 ${modColor}`}>{formatModifier(mod)}</span>
-            <div className="flex items-stretch mt-2 rounded-lg border border-base-300 overflow-hidden">
+            <div className="flex items-stretch mt-2 rounded-lg border border-transparent group-hover:border-base-300 overflow-hidden transition-colors">
               <button
-                className="px-2.5 py-1.5 bg-base-300 hover:bg-base-content/20 text-base font-bold leading-none"
+                className="px-2.5 py-1.5 bg-base-300 hover:bg-base-content/20 text-base font-bold leading-none opacity-0 group-hover:opacity-100 transition-opacity"
                 onClick={() => updateScore(ability, score - 1)}
               >
                 −
@@ -48,10 +48,10 @@ export const AbilityScores = observer(function AbilityScores() {
                   const num = parseInt(e.target.value);
                   if (!isNaN(num)) updateScore(ability, num);
                 }}
-                className="w-12 text-center text-base font-semibold bg-base-100 border-x border-base-300 focus:outline-none py-1.5"
+                className="w-12 text-center text-base font-semibold bg-base-100 border-x border-transparent group-hover:border-base-300 focus:outline-none py-1.5"
               />
               <button
-                className="px-2.5 py-1.5 bg-base-300 hover:bg-base-content/20 text-base font-bold leading-none"
+                className="px-2.5 py-1.5 bg-base-300 hover:bg-base-content/20 text-base font-bold leading-none opacity-0 group-hover:opacity-100 transition-opacity"
                 onClick={() => updateScore(ability, score + 1)}
               >
                 +

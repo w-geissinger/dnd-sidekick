@@ -2,6 +2,7 @@ import { makeAutoObservable } from 'mobx';
 
 export type ModalType = 'newCharacter' | 'spellSearch' | 'itemSearch' | null;
 export type SheetTab = 'combat' | 'spells' | 'equipment' | 'features' | 'lore';
+export type SpellViewMode = 'accordion' | 'list' | 'cards';
 
 const SPELL_COLUMNS_KEY = 'dnd-sidekick-spell-columns';
 const DEFAULT_SPELL_COLUMNS = ['level', 'castingTime', 'range', 'duration', 'components', 'concentration', 'ritual', 'damageType', 'save', 'classes'];
@@ -10,7 +11,9 @@ function loadSpellColumns(): string[] {
   try {
     const saved = localStorage.getItem(SPELL_COLUMNS_KEY);
     if (saved) return JSON.parse(saved);
-  } catch { /* ignore */ }
+  } catch (err) {
+    console.warn('[UIStore] Failed to load spell columns:', err);
+  }
   return DEFAULT_SPELL_COLUMNS;
 }
 
@@ -34,6 +37,18 @@ function loadTheme(): string {
   return DEFAULT_THEME;
 }
 
+const SPELL_VIEW_KEY = 'dnd-sidekick-spell-view';
+
+function loadSpellView(): SpellViewMode {
+  try {
+    const saved = localStorage.getItem(SPELL_VIEW_KEY);
+    if (saved === 'accordion' || saved === 'list' || saved === 'cards') return saved;
+  } catch (err) { 
+    console.warn('[UIStore] Failed to load spell view:', err);
+  }
+  return 'accordion';
+}
+
 const ITEM_COLUMNS_KEY = 'dnd-sidekick-item-columns';
 const DEFAULT_ITEM_COLUMNS = ['itemType', 'rarity', 'attunement', 'source'];
 
@@ -52,6 +67,7 @@ export class UIStore {
   spellColumns: string[] = loadSpellColumns();
   itemColumns: string[] = loadItemColumns();
   theme: string = loadTheme();
+  spellViewMode: SpellViewMode = loadSpellView();
 
   constructor() {
     makeAutoObservable(this);
@@ -86,6 +102,15 @@ export class UIStore {
 
   toggleSidebar() {
     this.sidebarOpen = !this.sidebarOpen;
+  }
+
+  setSpellViewMode(mode: SpellViewMode) {
+    this.spellViewMode = mode;
+    try {
+      localStorage.setItem(SPELL_VIEW_KEY, mode);
+    } catch (err) {
+        console.warn('[UIStore] Failed to set spell view:', err);
+    }
   }
 
   toggleSpellColumn(key: string) {

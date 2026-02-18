@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, Outlet, createRootRoute } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 import { RootStoreProvider, useCharacterStore, useUIStore } from '../stores/RootStore';
-import { GearFill, HouseDoorFill, InfoCircleFill, PaletteFill } from 'react-bootstrap-icons';
+import { CheckLg, GearFill, HouseDoorFill, InfoCircleFill, PaletteFill } from 'react-bootstrap-icons';
 import { THEMES } from '../stores/UIStore';
 import { observer } from 'mobx-react-lite';
 import { downloadJson, pickAndReadJsonFile } from '../utils/importExport';
@@ -74,16 +74,17 @@ const Navbar = observer(function Navbar() {
         </Link>
         <div className="dropdown dropdown-end">
           <div tabIndex={0} role="button" className="btn btn-ghost btn-sm gap-1.5">
-            <PaletteFill className="w-4 h-4" /> Theme
+            <PaletteFill className="w-4 h-4" /> <span className="capitalize">{uiStore.theme}</span>
           </div>
-          <div tabIndex={0} className="dropdown-content z-[1] p-2 shadow-lg bg-base-200 rounded-box w-48 max-h-80 overflow-y-auto">
+          <div tabIndex={0} className="dropdown-content z-[1] p-2 shadow-lg bg-base-200 rounded-box w-auto min-w-max max-h-80 overflow-y-auto">
             <ul className="menu menu-sm p-0">
               {THEMES.map((t) => (
                 <li key={t}>
                   <button
-                    className={uiStore.theme === t ? 'active' : ''}
+                    className={`flex items-center gap-2 ${uiStore.theme === t ? 'active' : ''}`}
                     onClick={() => uiStore.setTheme(t)}
                   >
+                    <CheckLg className={`w-3 h-3 shrink-0 ${uiStore.theme === t ? 'opacity-100' : 'opacity-0'}`} />
                     <span className="capitalize">{t}</span>
                   </button>
                 </li>
@@ -110,7 +111,7 @@ function RootComponent() {
     <RootStoreProvider>
       <div className="h-screen flex flex-col bg-base-100 overflow-hidden">
         <Navbar />
-        <div className="flex-1 min-h-0 flex flex-col">
+        <div className="flex-1 min-h-0 flex flex-col overflow-y-auto">
           <Outlet />
         </div>
       </div>
