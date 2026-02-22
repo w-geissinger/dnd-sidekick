@@ -36,7 +36,15 @@ export const CombatStats = observer(function CombatStats() {
         <div className="flex flex-col items-center p-3 bg-base-100 rounded-xl border border-base-300 w-28">
           <Lightning className="w-4 h-4 text-warning mb-1" />
           <span className="text-[10px] font-bold uppercase tracking-wider text-base-content/40">Initiative</span>
-          <span className="text-lg font-bold mt-1">{formatModifier(initiative)}</span>
+          <input
+            type="number"
+            value={initiative}
+            onChange={(e) => {
+              const val = e.target.value === '' ? null : parseInt(e.target.value);
+              update({ initiative: val });
+            }}
+            className="input input-bordered input-sm w-16 text-center text-lg font-bold mt-1"
+          />
           <span className="text-[10px] text-base-content/30">DEX {formatModifier(dexMod)}</span>
         </div>
 

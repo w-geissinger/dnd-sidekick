@@ -29,6 +29,7 @@ export interface Attack {
   damageAndType: string;
   notes: string;
   spellIndex?: string;
+  equipmentId?: string;
 }
 
 export interface EquipmentItem {
@@ -38,6 +39,10 @@ export interface EquipmentItem {
   weight?: number;
   description?: string;
   fromReference?: boolean;
+  itemType?: string;
+  rarity?: string;
+  requiresAttunement?: boolean;
+  value?: string;
 }
 
 export interface DeathSaves {

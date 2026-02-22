@@ -2,16 +2,17 @@ import React, { useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useCharacterStore } from '../../../stores/RootStore';
 import { generateId } from '../../../utils/characterUtils';
-import { getSpellByName } from '../../../services/referenceData';
+import { getSpellByName, getItemByName } from '../../../services/referenceData';
 import type { Attack } from '../../../types/character';
 import { SectionCard } from '../../shared/SectionCard';
 import { SpellDetail } from '../SpellDetail';
-import { EyeFill, XLg } from 'react-bootstrap-icons';
+import { ItemDetail } from '../ItemDetail';
+import { XLg } from 'react-bootstrap-icons';
 
 export const AttacksSection = observer(function AttacksSection() {
   const characterStore = useCharacterStore();
   const char = characterStore.activeCharacter!;
-  const [expandedSpellAttack, setExpandedSpellAttack] = useState<string | null>(null);
+  const [expandedAttack, setExpandedAttack] = useState<string | null>(null);
 
   function addAttack() {
     const newAttack: Attack = {
@@ -38,6 +39,11 @@ export const AttacksSection = observer(function AttacksSection() {
     characterStore.updateActiveCharacter({
       attacks: char.attacks.filter((a) => a.id !== id),
     });
+    if (expandedAttack === id) setExpandedAttack(null);
+  }
+
+  function toggleExpand(id: string) {
+    setExpandedAttack(expandedAttack === id ? null : id);
   }
 
   return (
@@ -66,18 +72,38 @@ export const AttacksSection = observer(function AttacksSection() {
             <tbody>
               {char.attacks.map((attack) => {
                 const refSpell = attack.spellIndex ? getSpellByName(attack.name) : undefined;
-                const isExpanded = expandedSpellAttack === attack.id;
+                const refItem = attack.equipmentId ? getItemByName(attack.name) : undefined;
+                const hasDetail = !!(refSpell || refItem);
+                const isExpanded = expandedAttack === attack.id;
                 return (
                   <React.Fragment key={attack.id}>
-                    <tr>
+                    <tr
+                      className={hasDetail ? 'hover:text-primary cursor-pointer transition-colors' : ''}
+                      onClick={(e) => {
+                        if (!hasDetail) return;
+                        if ((e.target as HTMLElement).closest('input, button')) return;
+                        toggleExpand(attack.id);
+                      }}
+                    >
                       <td>
-                        <input
-                          type="text"
-                          value={attack.name}
-                          onChange={(e) => updateAttack(attack.id, 'name', e.target.value)}
-                          className="input input-bordered input-xs w-28"
-                          placeholder="Weapon"
-                        />
+                        <div className="flex items-center gap-1">
+                          {hasDetail && (
+                            <span className="px-0.5 text-xs">
+                              {isExpanded ? '▾' : '▸'}
+                            </span>
+                          )}
+                          {hasDetail ? (
+                            <span className="text-sm font-medium px-1">{attack.name}</span>
+                          ) : (
+                            <input
+                              type="text"
+                              value={attack.name}
+                              onChange={(e) => updateAttack(attack.id, 'name', e.target.value)}
+                              className="input input-bordered input-xs w-28"
+                              placeholder="Weapon"
+                            />
+                          )}
+                        </div>
                       </td>
                       <td>
                         <input
@@ -106,30 +132,19 @@ export const AttacksSection = observer(function AttacksSection() {
                         />
                       </td>
                       <td>
-                        <div className="flex items-center justify-end gap-0.5">
-                          {refSpell && (
-                            <button
-                              className={`btn btn-ghost btn-xs${isExpanded ? ' text-primary' : ' text-info'}`}
-                              title="View spell details"
-                              onClick={() => setExpandedSpellAttack(isExpanded ? null : attack.id)}
-                            >
-                              <EyeFill />
-                            </button>
-                          )}
-                          <button
-                            className="btn btn-ghost btn-xs text-error"
-                            onClick={() => removeAttack(attack.id)}
-                          >
-                            <XLg />
-                          </button>
-                        </div>
+                        <button
+                          className="btn btn-ghost btn-xs text-error"
+                          onClick={() => removeAttack(attack.id)}
+                        >
+                          <XLg />
+                        </button>
                       </td>
                     </tr>
-                    {isExpanded && refSpell && (
+                    {isExpanded && (refSpell || refItem) && (
                       <tr>
                         <td colSpan={5} className="p-0">
                           <div className="mx-2 my-1 p-3 bg-base-100 rounded-lg border border-base-300">
-                            <SpellDetail spell={refSpell} />
+                            {refSpell ? <SpellDetail spell={refSpell} /> : refItem ? <ItemDetail item={refItem} /> : null}
                           </div>
                         </td>
                       </tr>

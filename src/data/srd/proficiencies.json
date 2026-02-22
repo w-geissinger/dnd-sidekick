@@ -5,6 +5,11 @@
     "name": "Light Armor",
     "classes": [
       {
+        "index": "artificer",
+        "name": "Artificer",
+        "url": "/api/2014/classes/artificer"
+      },
+      {
         "index": "barbarian",
         "name": "Barbarian",
         "url": "/api/2014/classes/barbarian"
@@ -53,6 +58,11 @@
     "type": "Armor",
     "name": "Medium Armor",
     "classes": [
+      {
+        "index": "artificer",
+        "name": "Artificer",
+        "url": "/api/2014/classes/artificer"
+      },
       {
         "index": "barbarian",
         "name": "Barbarian",
@@ -281,6 +291,11 @@
     "name": "Shields",
     "classes": [
       {
+        "index": "artificer",
+        "name": "Artificer",
+        "url": "/api/2014/classes/artificer"
+      },
+      {
         "index": "barbarian",
         "name": "Barbarian",
         "url": "/api/2014/classes/barbarian"
@@ -324,6 +339,11 @@
     "type": "Weapons",
     "name": "Simple Weapons",
     "classes": [
+      {
+        "index": "artificer",
+        "name": "Artificer",
+        "url": "/api/2014/classes/artificer"
+      },
       {
         "index": "barbarian",
         "name": "Barbarian",
@@ -1287,7 +1307,13 @@
     "index": "tinkers-tools",
     "type": "Artisan's Tools",
     "name": "Tinker's Tools",
-    "classes": [],
+    "classes": [
+      {
+        "index": "artificer",
+        "name": "Artificer",
+        "url": "/api/2014/classes/artificer"
+      }
+    ],
     "races": [],
     "url": "/api/2014/proficiencies/tinkers-tools",
     "reference": {
@@ -1555,6 +1581,11 @@
     "name": "Thieves' Tools",
     "classes": [
       {
+        "index": "artificer",
+        "name": "Artificer",
+        "url": "/api/2014/classes/artificer"
+      },
+      {
         "index": "rogue",
         "name": "Rogue",
         "url": "/api/2014/classes/rogue"
@@ -1668,6 +1699,11 @@
     "name": "Saving Throw: CON",
     "classes": [
       {
+        "index": "artificer",
+        "name": "Artificer",
+        "url": "/api/2014/classes/artificer"
+      },
+      {
         "index": "barbarian",
         "name": "Barbarian",
         "url": "/api/2014/classes/barbarian"
@@ -1696,6 +1732,11 @@
     "type": "Saving Throws",
     "name": "Saving Throw: INT",
     "classes": [
+      {
+        "index": "artificer",
+        "name": "Artificer",
+        "url": "/api/2014/classes/artificer"
+      },
       {
         "index": "druid",
         "name": "Druid",

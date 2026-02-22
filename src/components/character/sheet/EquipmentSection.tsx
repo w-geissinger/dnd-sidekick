@@ -7,7 +7,7 @@ import type { EquipmentItem, Currency } from '../../../types/character';
 import { SectionCard } from '../../shared/SectionCard';
 import { ItemSearchModal } from '../ItemSearchModal';
 import { ItemDetail } from '../ItemDetail';
-import { XLg, CircleFill } from 'react-bootstrap-icons';
+import { XLg, CircleFill, Crosshair2 } from 'react-bootstrap-icons';
 import { SortIcon } from '../../shared/SortIcon';
 
 export const EquipmentSection = observer(function EquipmentSection() {
@@ -30,7 +30,7 @@ export const EquipmentSection = observer(function EquipmentSection() {
     });
   }
 
-  function updateItem(id: string, field: keyof EquipmentItem, value: string | number) {
+  function updateItem(id: string, field: keyof EquipmentItem, value: string | number | boolean) {
     characterStore.updateActiveCharacter({
       equipment: char.equipment.map((item) =>
         item.id === id ? { ...item, [field]: value } : item
@@ -193,22 +193,22 @@ export const EquipmentSection = observer(function EquipmentSection() {
               </thead>
               <tbody>
                 {filteredEquipment.map((item) => {
-                  const refItem = getItemByName(item.name);
+                  const refItem = item.fromReference ? getItemByName(item.name) : null;
                   const isExpanded = expandedItem === item.id;
                   return (
                     <React.Fragment key={item.id}>
-                      <tr>
+                      <tr
+                        className="hover:text-primary cursor-pointer transition-colors"
+                        onClick={(e) => {
+                          if ((e.target as HTMLElement).closest('input, button, select, textarea')) return;
+                          toggleExpand(item.id);
+                        }}
+                      >
                         <td>
                           <div className="flex items-center gap-1">
-                            {refItem && (
-                              <button
-                                className="btn btn-ghost btn-xs px-0.5"
-                                onClick={() => toggleExpand(item.id)}
-                                title={isExpanded ? 'Collapse details' : 'Expand details'}
-                              >
-                                {isExpanded ? '▾' : '▸'}
-                              </button>
-                            )}
+                            <span className="px-0.5 text-xs">
+                              {isExpanded ? '▾' : '▸'}
+                            </span>
                             {item.fromReference ? (
                               <span className="text-sm font-medium px-1">{item.name}</span>
                             ) : (
@@ -243,18 +243,89 @@ export const EquipmentSection = observer(function EquipmentSection() {
                           />
                         </td>
                         <td>
-                          <button
-                            className="btn btn-ghost btn-xs text-error"
-                            onClick={() => removeItem(item.id)}
-                          >
-                            <XLg />
-                          </button>
+                          <div className="flex items-center justify-end gap-0.5">
+                            <button
+                              className="btn btn-ghost btn-xs text-info tooltip tooltip-left"
+                              data-tip="Add to attacks"
+                              onClick={() => characterStore.addAttackFromItem(item.name, item.id)}
+                            >
+                              <Crosshair2 />
+                            </button>
+                            <button
+                              className="btn btn-ghost btn-xs text-error"
+                              onClick={() => removeItem(item.id)}
+                            >
+                              <XLg />
+                            </button>
+                          </div>
                         </td>
                       </tr>
-                      {isExpanded && refItem && (
+                      {isExpanded && (
                         <tr>
                           <td colSpan={4} className="bg-base-200/50 px-4 py-3">
-                            <ItemDetail item={refItem} />
+                            {refItem ? (
+                              <ItemDetail item={refItem} />
+                            ) : (
+                              <div className="space-y-3">
+                                <div className="flex flex-wrap gap-3">
+                                  <div className="flex flex-col gap-0.5">
+                                    <span className="text-[10px] font-semibold uppercase text-base-content/40">Type</span>
+                                    <input
+                                      type="text"
+                                      value={item.itemType ?? ''}
+                                      onChange={(e) => updateItem(item.id, 'itemType', e.target.value)}
+                                      className="input input-bordered input-xs w-32"
+                                      placeholder="e.g. Weapon, Armor"
+                                    />
+                                  </div>
+                                  <div className="flex flex-col gap-0.5">
+                                    <span className="text-[10px] font-semibold uppercase text-base-content/40">Rarity</span>
+                                    <select
+                                      value={item.rarity ?? ''}
+                                      onChange={(e) => updateItem(item.id, 'rarity', e.target.value)}
+                                      className="select select-bordered select-xs"
+                                    >
+                                      <option value="">—</option>
+                                      <option>Common</option>
+                                      <option>Uncommon</option>
+                                      <option>Rare</option>
+                                      <option>Very Rare</option>
+                                      <option>Legendary</option>
+                                      <option>Artifact</option>
+                                    </select>
+                                  </div>
+                                  <div className="flex flex-col gap-0.5">
+                                    <span className="text-[10px] font-semibold uppercase text-base-content/40">Value</span>
+                                    <input
+                                      type="text"
+                                      value={item.value ?? ''}
+                                      onChange={(e) => updateItem(item.id, 'value', e.target.value)}
+                                      className="input input-bordered input-xs w-24"
+                                      placeholder="e.g. 50 gp"
+                                    />
+                                  </div>
+                                  <label className="flex items-end gap-1.5 pb-0.5 cursor-pointer">
+                                    <input
+                                      type="checkbox"
+                                      checked={item.requiresAttunement ?? false}
+                                      onChange={(e) => updateItem(item.id, 'requiresAttunement', e.target.checked)}
+                                      className="checkbox checkbox-xs"
+                                    />
+                                    <span className="text-xs">Requires Attunement</span>
+                                  </label>
+                                </div>
+                                <div className="flex flex-col gap-0.5">
+                                  <span className="text-[10px] font-semibold uppercase text-base-content/40">Description</span>
+                                  <textarea
+                                    value={item.description ?? ''}
+                                    onChange={(e) => updateItem(item.id, 'description', e.target.value)}
+                                    className="textarea textarea-bordered textarea-xs w-full min-h-16"
+                                    placeholder="Item description, properties, effects..."
+                                    rows={3}
+                                  />
+                                </div>
+                              </div>
+                            )}
                           </td>
                         </tr>
                       )}

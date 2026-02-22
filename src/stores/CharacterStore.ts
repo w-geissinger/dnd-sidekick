@@ -98,6 +98,22 @@ export class CharacterStore {
     });
   }
 
+  addAttackFromItem(itemName: string, equipmentId: string) {
+    const char = this.activeCharacter;
+    if (!char) return;
+    const newAttack: Attack = {
+      id: generateId(),
+      name: itemName,
+      attackBonus: '',
+      damageAndType: '',
+      notes: '',
+      equipmentId,
+    };
+    this.updateActiveCharacter({
+      attacks: [...char.attacks, newAttack],
+    });
+  }
+
   removeSpell(spellIndex: string) {
     const char = this.activeCharacter;
     if (!char) return;

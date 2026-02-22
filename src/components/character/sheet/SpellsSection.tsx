@@ -299,7 +299,13 @@ export const SpellsSection = observer(function SpellsSection() {
                       const refSpell = getSpellByName(spell.name);
                       return (
                         <div key={spell.index}>
-                          <div className="flex items-center gap-2 rounded px-1 -mx-1 hover:bg-base-300/50 transition-colors">
+                          <div
+                            className="flex items-center gap-2 rounded px-1 -mx-1 hover:bg-base-300/50 hover:text-primary cursor-pointer transition-colors"
+                            onClick={(e) => {
+                              if ((e.target as HTMLElement).closest('input, button')) return;
+                              toggleExpanded(spell.index);
+                            }}
+                          >
                             {level > 0 && (
                               <input
                                 type="checkbox"
@@ -309,11 +315,7 @@ export const SpellsSection = observer(function SpellsSection() {
                                 title="Prepared"
                               />
                             )}
-                            <span
-                              className="text-sm font-medium cursor-pointer hover:text-primary shrink-0"
-                              title="Click for full description"
-                              onClick={() => toggleExpanded(spell.index)}
-                            >
+                            <span className="text-sm font-medium shrink-0">
                               {isExpanded ? '▾' : '▸'} {spell.name}
                             </span>
                             {refSpell && visibleCols.length > 0 && (
@@ -379,7 +381,13 @@ export const SpellsSection = observer(function SpellsSection() {
                 return (
                   <div key={spell.index}>
                     {showDivider && <div className="border-t border-base-300 my-2" />}
-                    <div className="flex items-center gap-2 rounded px-1 -mx-1 hover:bg-base-300/50 transition-colors">
+                    <div
+                      className="flex items-center gap-2 rounded px-1 -mx-1 hover:bg-base-300/50 hover:text-primary cursor-pointer transition-colors"
+                      onClick={(e) => {
+                        if ((e.target as HTMLElement).closest('input, button')) return;
+                        toggleExpanded(spell.index);
+                      }}
+                    >
                       {spell.level > 0 && (
                         <input
                           type="checkbox"
@@ -390,11 +398,7 @@ export const SpellsSection = observer(function SpellsSection() {
                         />
                       )}
                       {levelBadge(spell.level)}
-                      <span
-                        className="text-sm font-medium cursor-pointer hover:text-primary shrink-0"
-                        title="Click for full description"
-                        onClick={() => toggleExpanded(spell.index)}
-                      >
+                      <span className="text-sm font-medium shrink-0">
                         {isExpanded ? '▾' : '▸'} {spell.name}
                       </span>
                       {refSpell && visibleCols.length > 0 && (
