@@ -4,6 +4,7 @@ import { observer } from 'mobx-react-lite';
 import { useCharacterStore, useUIStore } from '../../stores/RootStore';
 import { ALIGNMENTS, CLASSES, RACES } from '../../utils/characterUtils';
 import type { NewCharacterDraft } from '../../types/character';
+import { NumericInput } from '../shared/NumericInput';
 
 export const NewCharacterModal = observer(function NewCharacterModal() {
   const characterStore = useCharacterStore();
@@ -97,12 +98,11 @@ export const NewCharacterModal = observer(function NewCharacterModal() {
 
           <label className="form-control">
             <span className="label-text mb-1">Level</span>
-            <input
-              type="number"
+            <NumericInput
+              value={draft.level}
+              onCommit={(v) => setDraft({ ...draft, level: v ?? 1 })}
               min={1}
               max={20}
-              value={draft.level}
-              onChange={(e) => setDraft({ ...draft, level: parseInt(e.target.value) || 1 })}
               className="input input-bordered w-24"
             />
           </label>

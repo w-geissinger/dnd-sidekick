@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { useCharacterStore } from '../../../stores/RootStore';
 import { getProficiencyBonus, formatModifier, ALIGNMENTS, CLASSES, RACES } from '../../../utils/characterUtils';
 import { StarFill, Star } from 'react-bootstrap-icons';
+import { NumericInput } from '../../shared/NumericInput';
 
 export const CharacterHeader = observer(function CharacterHeader() {
   const characterStore = useCharacterStore();
@@ -74,12 +75,11 @@ export const CharacterHeader = observer(function CharacterHeader() {
 
         <div className="flex flex-col">
           <span className="text-[10px] font-semibold uppercase tracking-wider text-base-content/40 mb-0.5">Level</span>
-          <input
-            type="number"
+          <NumericInput
+            value={char.level}
+            onCommit={(v) => characterStore.updateActiveCharacter({ level: v ?? 1 })}
             min={1}
             max={20}
-            value={char.level}
-            onChange={(e) => characterStore.updateActiveCharacter({ level: parseInt(e.target.value) || 1 })}
             className="input input-bordered input-sm w-18"
           />
         </div>
@@ -118,11 +118,10 @@ export const CharacterHeader = observer(function CharacterHeader() {
 
         <div className="flex flex-col">
           <span className="text-[10px] font-semibold uppercase tracking-wider text-base-content/40 mb-0.5">XP</span>
-          <input
-            type="number"
-            min={0}
+          <NumericInput
             value={char.experiencePoints}
-            onChange={(e) => characterStore.updateActiveCharacter({ experiencePoints: parseInt(e.target.value) || 0 })}
+            onCommit={(v) => characterStore.updateActiveCharacter({ experiencePoints: v ?? 0 })}
+            min={0}
             className="input input-bordered input-sm w-24"
           />
         </div>

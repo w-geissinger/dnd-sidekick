@@ -6,6 +6,7 @@ import { getSpellByName } from '../../../services/referenceData';
 import type { AbilityScoreKey } from '../../../types/character';
 import type { SpellViewMode } from '../../../stores/UIStore';
 import { SectionCard } from '../../shared/SectionCard';
+import { NumericInput } from '../../shared/NumericInput';
 import { SpellDetail } from '../SpellDetail';
 import { SpellSearchModal } from '../SpellSearchModal';
 import { ALL_SPELL_COLUMNS } from '../SpellTable';
@@ -113,13 +114,10 @@ export const SpellsSection = observer(function SpellsSection() {
                 className="px-2 py-1 bg-base-300 hover:bg-base-content/20 text-sm font-bold leading-none opacity-0 group-hover:opacity-100 transition-opacity"
                 onClick={() => characterStore.updateActiveCharacter({ spellSaveDC: displaySaveDC - 1 })}
               >−</button>
-              <input
-                type="number"
+              <NumericInput
                 value={displaySaveDC}
-                onChange={(e) => {
-                  const val = parseInt(e.target.value);
-                  if (!isNaN(val)) characterStore.updateActiveCharacter({ spellSaveDC: val });
-                }}
+                onCommit={(v) => characterStore.updateActiveCharacter({ spellSaveDC: v })}
+                allowEmpty
                 className="w-10 text-center text-sm font-semibold bg-base-100 border-x border-transparent group-hover:border-base-300 focus:outline-none py-1"
               />
               <button
@@ -136,13 +134,10 @@ export const SpellsSection = observer(function SpellsSection() {
                 className="px-2 py-1 bg-base-300 hover:bg-base-content/20 text-sm font-bold leading-none opacity-0 group-hover:opacity-100 transition-opacity"
                 onClick={() => characterStore.updateActiveCharacter({ spellAttackBonus: displayAttackBonus - 1 })}
               >−</button>
-              <input
-                type="number"
+              <NumericInput
                 value={displayAttackBonus}
-                onChange={(e) => {
-                  const val = parseInt(e.target.value);
-                  if (!isNaN(val)) characterStore.updateActiveCharacter({ spellAttackBonus: val });
-                }}
+                onCommit={(v) => characterStore.updateActiveCharacter({ spellAttackBonus: v })}
+                allowEmpty
                 className="w-10 text-center text-sm font-semibold bg-base-100 border-x border-transparent group-hover:border-base-300 focus:outline-none py-1"
               />
               <button
@@ -162,14 +157,11 @@ export const SpellsSection = observer(function SpellsSection() {
                   characterStore.updateActiveCharacter({ maxPreparedSpells: Math.max(0, current - 1) });
                 }}
               >−</button>
-              <input
-                type="number"
+              <NumericInput
+                value={char.maxPreparedSpells}
+                onCommit={(v) => characterStore.updateActiveCharacter({ maxPreparedSpells: v })}
+                allowEmpty
                 min={0}
-                value={char.maxPreparedSpells ?? ''}
-                onChange={(e) => {
-                  const val = e.target.value === '' ? null : (parseInt(e.target.value) || 0);
-                  characterStore.updateActiveCharacter({ maxPreparedSpells: val });
-                }}
                 placeholder="—"
                 className="w-10 text-center text-sm font-semibold bg-base-100 border-x border-transparent group-hover:border-base-300 focus:outline-none py-1"
               />
@@ -219,11 +211,10 @@ export const SpellsSection = observer(function SpellsSection() {
                     className="px-1 py-0.5 bg-base-300 hover:bg-base-content/20 text-xs font-bold leading-none opacity-0 group-hover:opacity-100 transition-opacity"
                     onClick={() => updateSlot({ used: Math.max(0, slot.used - 1) })}
                   >−</button>
-                  <input
-                    type="number"
-                    min={0}
+                  <NumericInput
                     value={slot.used}
-                    onChange={(e) => updateSlot({ used: parseInt(e.target.value) || 0 })}
+                    onCommit={(v) => updateSlot({ used: v ?? 0 })}
+                    min={0}
                     className="w-7 text-center text-sm font-semibold bg-base-100 border-x border-transparent group-hover:border-base-300 focus:outline-none py-0.5"
                   />
                   <button
@@ -232,11 +223,10 @@ export const SpellsSection = observer(function SpellsSection() {
                   >+</button>
                 </div>
                 <div className="w-4 border-t border-base-300 my-0.5" />
-                <input
-                  type="number"
-                  min={0}
+                <NumericInput
                   value={slot.total}
-                  onChange={(e) => updateSlot({ total: parseInt(e.target.value) || 0 })}
+                  onCommit={(v) => updateSlot({ total: v ?? 0 })}
+                  min={0}
                   className="input input-bordered input-xs w-10 text-center text-xs text-base-content/60"
                 />
               </div>

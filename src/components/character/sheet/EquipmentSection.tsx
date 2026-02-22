@@ -9,6 +9,7 @@ import { ItemSearchModal } from '../ItemSearchModal';
 import { ItemDetail } from '../ItemDetail';
 import { XLg, CircleFill, Crosshair2 } from 'react-bootstrap-icons';
 import { SortIcon } from '../../shared/SortIcon';
+import { NumericInput } from '../../shared/NumericInput';
 
 export const EquipmentSection = observer(function EquipmentSection() {
   const characterStore = useCharacterStore();
@@ -120,11 +121,10 @@ export const EquipmentSection = observer(function EquipmentSection() {
                   >
                     −
                   </button>
-                  <input
-                    type="number"
-                    min={0}
+                  <NumericInput
                     value={char.currency[key]}
-                    onChange={(e) => updateCurrency(key, parseInt(e.target.value) || 0)}
+                    onCommit={(v) => updateCurrency(key, v ?? 0)}
+                    min={0}
                     className="w-8 text-center text-sm font-semibold bg-base-100 border-x border-transparent group-hover:border-base-300 focus:outline-none py-0.5"
                   />
                   <button
@@ -223,21 +223,19 @@ export const EquipmentSection = observer(function EquipmentSection() {
                           </div>
                         </td>
                         <td>
-                          <input
-                            type="number"
-                            min={0}
+                          <NumericInput
                             value={item.quantity}
-                            onChange={(e) => updateItem(item.id, 'quantity', parseInt(e.target.value) || 0)}
+                            onCommit={(v) => updateItem(item.id, 'quantity', v ?? 0)}
+                            min={0}
                             className="input input-bordered input-xs w-14 text-center"
                           />
                         </td>
                         <td>
-                          <input
-                            type="number"
+                          <NumericInput
+                            value={item.weight ?? null}
+                            onCommit={(v) => updateItem(item.id, 'weight', v ?? 0)}
+                            integer={false}
                             min={0}
-                            step={0.1}
-                            value={item.weight ?? ''}
-                            onChange={(e) => updateItem(item.id, 'weight', parseFloat(e.target.value) || 0)}
                             className="input input-bordered input-xs w-16 text-center"
                             placeholder="—"
                           />

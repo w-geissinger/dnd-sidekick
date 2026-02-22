@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { useCharacterStore } from '../../../stores/RootStore';
 import { getAbilityModifier, formatModifier, ABILITY_SCORE_NAMES } from '../../../utils/characterUtils';
 import type { AbilityScoreKey } from '../../../types/character';
+import { NumericInput } from '../../shared/NumericInput';
 
 const ABILITIES: AbilityScoreKey[] = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
 
@@ -39,15 +40,11 @@ export const AbilityScores = observer(function AbilityScores() {
               >
                 −
               </button>
-              <input
-                type="number"
+              <NumericInput
+                value={score}
+                onCommit={(v) => updateScore(ability, v ?? 10)}
                 min={1}
                 max={30}
-                value={score}
-                onChange={(e) => {
-                  const num = parseInt(e.target.value);
-                  if (!isNaN(num)) updateScore(ability, num);
-                }}
                 className="w-12 text-center text-base font-semibold bg-base-100 border-x border-transparent group-hover:border-base-300 focus:outline-none py-1.5"
               />
               <button
