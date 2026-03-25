@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@10.15.1",
   "scripts": {
     "typecheck": "tsc --noEmit",
     "dev": "vite --port=3001",
