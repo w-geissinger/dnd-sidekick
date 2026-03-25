@@ -13,4 +13,15 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: (id) => {
+          if (id.includes('dnd-data/data/items')) return 'dnd-data-items';
+          if (id.includes('dnd-data/data/spells')) return 'dnd-data-spells';
+          if (id.includes('dnd-data/data/backgrounds')) return 'dnd-data-backgrounds';
+        },
+      },
+    },
+  },
 })
