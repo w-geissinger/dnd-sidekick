@@ -12,13 +12,14 @@ import { EquipmentSection } from './sheet/EquipmentSection';
 import { SpellsSection } from './sheet/SpellsSection';
 import { FeaturesSection } from './sheet/FeaturesSection';
 import { CharacterDescription } from './sheet/CharacterDescription';
+import { ShieldFill, Stars, Bag, Award, BookHalf, ListCheck } from 'react-bootstrap-icons';
 
-const TABS: { key: SheetTab; label: string }[] = [
-  { key: 'combat', label: 'Combat' },
-  { key: 'spells', label: 'Spells' },
-  { key: 'equipment', label: 'Equipment' },
-  { key: 'features', label: 'Features' },
-  { key: 'lore', label: 'Lore' },
+const TABS: { key: SheetTab; label: string; icon: React.ElementType }[] = [
+  { key: 'combat',    label: 'Combat',    icon: ShieldFill },
+  { key: 'spells',    label: 'Spells',    icon: Stars      },
+  { key: 'equipment', label: 'Equipment', icon: Bag        },
+  { key: 'features',  label: 'Features',  icon: Award      },
+  { key: 'lore',      label: 'Lore',      icon: BookHalf   },
 ];
 
 export const CharacterSheet = observer(function CharacterSheet() {
@@ -38,8 +39,8 @@ export const CharacterSheet = observer(function CharacterSheet() {
         <AbilityScores />
       </div>
 
-      {/* Tab row spanning both sidebar and main content */}
-      <div className={`flex shrink-0 ${sidebarOpen ? 'sm:gap-4' : ''}`}>
+      {/* Tab row — desktop only */}
+      <div className={`hidden sm:flex shrink-0 ${sidebarOpen ? 'sm:gap-4' : ''}`}>
         {/* Skills tab — on desktop aligns above sidebar width */}
         <div className={`shrink-0 transition-all duration-200 flex items-end ${sidebarOpen ? 'sm:w-72' : 'w-auto'}`}>
           <button
@@ -91,7 +92,7 @@ export const CharacterSheet = observer(function CharacterSheet() {
         {/* Main content */}
         <div className="flex-1 min-w-0 flex flex-col min-h-0">
           <div className="folder-panel flex-1 min-h-0 overflow-y-auto">
-            <div className="space-y-4">
+            <div className="space-y-4 pb-20 sm:pb-0">
               {tab === 'combat' && (
                 <>
                   <div className="flex flex-col sm:flex-row gap-4 items-stretch">
@@ -113,6 +114,26 @@ export const CharacterSheet = observer(function CharacterSheet() {
           </div>
         </div>
       </div>
+      {/* Bottom nav — mobile only */}
+      <nav className="sm:hidden fixed bottom-0 inset-x-0 z-30 bg-base-100 border-t border-base-300 flex" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+        <button
+          className={`flex-1 flex flex-col items-center justify-center py-2 gap-0.5 transition-colors ${sidebarOpen ? 'text-primary' : 'text-base-content/40'}`}
+          onClick={() => uiStore.toggleSidebar()}
+        >
+          <ListCheck className="w-5 h-5" />
+          <span className="text-[9px] font-medium">Skills</span>
+        </button>
+        {TABS.map(({ key, label, icon: Icon }) => (
+          <button
+            key={key}
+            className={`flex-1 flex flex-col items-center justify-center py-2 gap-0.5 transition-colors ${tab === key ? 'text-primary' : 'text-base-content/40'}`}
+            onClick={() => uiStore.setActiveTab(key)}
+          >
+            <Icon className="w-5 h-5" />
+            <span className="text-[9px] font-medium">{label}</span>
+          </button>
+        ))}
+      </nav>
     </div>
   );
 });

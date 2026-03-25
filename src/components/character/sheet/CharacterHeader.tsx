@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useCharacterStore } from '../../../stores/RootStore';
 import { getProficiencyBonus, formatModifier, ALIGNMENTS, CLASSES, RACES } from '../../../utils/characterUtils';
-import { StarFill, Star } from 'react-bootstrap-icons';
+import { StarFill, Star, PencilFill } from 'react-bootstrap-icons';
 import { NumericInput } from '../../shared/NumericInput';
 
 export const CharacterHeader = observer(function CharacterHeader() {
@@ -12,6 +12,7 @@ export const CharacterHeader = observer(function CharacterHeader() {
 
   const [editingName, setEditingName] = useState(false);
   const [nameValue, setNameValue] = useState(char.name);
+  const [editingDetails, setEditingDetails] = useState(false);
 
   function saveName() {
     setEditingName(false);
@@ -59,72 +60,110 @@ export const CharacterHeader = observer(function CharacterHeader() {
         </div>
       </div>
 
-      {/* Character details row */}
-      <div className="flex flex-wrap items-end gap-x-2 gap-y-2">
-        <div className="flex flex-col">
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-base-content/40 mb-0.5">Class</span>
-          <select
-            value={char.class}
-            onChange={(e) => characterStore.updateActiveCharacter({ class: e.target.value })}
-            className="select select-bordered select-sm"
+      {/* Character details row — collapsed summary / expanded editor */}
+      {editingDetails ? (
+        <>
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-base-content/40">Character Details</span>
+            <button
+              className="btn btn-ghost btn-xs gap-1 text-base-content/50"
+              onClick={() => setEditingDetails(false)}
+            >
+              Done
+            </button>
+          </div>
+          <div className="flex flex-wrap items-end gap-x-2 gap-y-2">
+            <div className="flex flex-col">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-base-content/40 mb-0.5">Class</span>
+              <select
+                value={char.class}
+                onChange={(e) => characterStore.updateActiveCharacter({ class: e.target.value })}
+                className="select select-bordered select-sm"
+              >
+                {CLASSES.map((c) => <option key={c} value={c}>{c}</option>)}
+              </select>
+            </div>
+
+            <div className="flex flex-col">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-base-content/40 mb-0.5">Level</span>
+              <NumericInput
+                value={char.level}
+                onCommit={(v) => characterStore.updateActiveCharacter({ level: v ?? 1 })}
+                min={1}
+                max={20}
+                className="input input-bordered input-sm w-18"
+              />
+            </div>
+
+            <div className="flex flex-col">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-base-content/40 mb-0.5">Race</span>
+              <select
+                value={char.race}
+                onChange={(e) => characterStore.updateActiveCharacter({ race: e.target.value })}
+                className="select select-bordered select-sm"
+              >
+                {RACES.map((r) => <option key={r} value={r}>{r}</option>)}
+              </select>
+            </div>
+
+            <div className="flex flex-col">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-base-content/40 mb-0.5">Background</span>
+              <input
+                type="text"
+                value={char.background}
+                onChange={(e) => characterStore.updateActiveCharacter({ background: e.target.value })}
+                className="input input-bordered input-sm w-32"
+              />
+            </div>
+
+            <div className="flex flex-col">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-base-content/40 mb-0.5">Alignment</span>
+              <select
+                value={char.alignment}
+                onChange={(e) => characterStore.updateActiveCharacter({ alignment: e.target.value })}
+                className="select select-bordered select-sm"
+              >
+                {ALIGNMENTS.map((a) => <option key={a} value={a}>{a}</option>)}
+              </select>
+            </div>
+
+            <div className="flex flex-col">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-base-content/40 mb-0.5">XP</span>
+              <NumericInput
+                value={char.experiencePoints}
+                onCommit={(v) => characterStore.updateActiveCharacter({ experiencePoints: v ?? 0 })}
+                min={0}
+                className="input input-bordered input-sm w-24"
+              />
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 flex-1 min-w-0">
+            <span className="text-sm font-semibold">Lvl {char.level} {char.class}</span>
+            <span className="text-sm text-base-content/70">{char.race}</span>
+            {char.background && (
+              <span className="text-sm text-base-content/70">{char.background}</span>
+            )}
+            {char.alignment && (
+              <span className="text-sm text-base-content/60">{char.alignment}</span>
+            )}
+            {char.experiencePoints > 0 && (
+              <span className="text-sm text-base-content/50">
+                {char.experiencePoints.toLocaleString()} XP
+              </span>
+            )}
+          </div>
+          <button
+            className="btn btn-ghost btn-xs gap-1 text-base-content/40 shrink-0"
+            onClick={() => setEditingDetails(true)}
           >
-            {CLASSES.map((c) => <option key={c} value={c}>{c}</option>)}
-          </select>
+            <PencilFill className="w-3 h-3" />
+            <span className="hidden sm:inline">Edit</span>
+          </button>
         </div>
-
-        <div className="flex flex-col">
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-base-content/40 mb-0.5">Level</span>
-          <NumericInput
-            value={char.level}
-            onCommit={(v) => characterStore.updateActiveCharacter({ level: v ?? 1 })}
-            min={1}
-            max={20}
-            className="input input-bordered input-sm w-18"
-          />
-        </div>
-
-        <div className="flex flex-col">
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-base-content/40 mb-0.5">Race</span>
-          <select
-            value={char.race}
-            onChange={(e) => characterStore.updateActiveCharacter({ race: e.target.value })}
-            className="select select-bordered select-sm"
-          >
-            {RACES.map((r) => <option key={r} value={r}>{r}</option>)}
-          </select>
-        </div>
-
-        <div className="flex flex-col">
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-base-content/40 mb-0.5">Background</span>
-          <input
-            type="text"
-            value={char.background}
-            onChange={(e) => characterStore.updateActiveCharacter({ background: e.target.value })}
-            className="input input-bordered input-sm w-32"
-          />
-        </div>
-
-        <div className="flex flex-col">
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-base-content/40 mb-0.5">Alignment</span>
-          <select
-            value={char.alignment}
-            onChange={(e) => characterStore.updateActiveCharacter({ alignment: e.target.value })}
-            className="select select-bordered select-sm"
-          >
-            {ALIGNMENTS.map((a) => <option key={a} value={a}>{a}</option>)}
-          </select>
-        </div>
-
-        <div className="flex flex-col">
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-base-content/40 mb-0.5">XP</span>
-          <NumericInput
-            value={char.experiencePoints}
-            onCommit={(v) => characterStore.updateActiveCharacter({ experiencePoints: v ?? 0 })}
-            min={0}
-            className="input input-bordered input-sm w-24"
-          />
-        </div>
-      </div>
+      )}
     </div>
   );
 });

@@ -63,7 +63,7 @@ function loadItemColumns(): string[] {
 export class UIStore {
   activeModal: ModalType = null;
   activeCharacterSheetTab: SheetTab = 'combat';
-  sidebarOpen: boolean = true;
+  sidebarOpen: boolean = window.innerWidth >= 640;
   spellColumns: string[] = loadSpellColumns();
   itemColumns: string[] = loadItemColumns();
   theme: string = loadTheme();

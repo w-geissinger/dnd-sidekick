@@ -90,6 +90,44 @@ input[type="number"] {
   padding: 1rem;
 }
 
+/* ── Bottom drawer animations ───────────────────────────── */
+
+@keyframes drawer-slide-up {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+@keyframes backdrop-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.drawer-slide-up {
+  animation: drawer-slide-up 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@media (min-width: 640px) {
+  .drawer-slide-up {
+    animation: modal-fade-in 0.18s ease-out;
+  }
+}
+
+@keyframes modal-fade-in {
+  from { opacity: 0; transform: scale(0.97) translateY(-6px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.backdrop-fade-in {
+  animation: backdrop-fade-in 0.2s ease-out;
+}
+
+/* On mobile the folder tab row is hidden, so give the panel full rounding */
+@media (max-width: 639px) {
+  .folder-panel {
+    border-radius: 0.5rem;
+  }
+}
+
 /* ── Mobile / touch device overrides ────────────────────── */
 
 /* On touch devices, always show elements that are normally

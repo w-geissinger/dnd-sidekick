@@ -48,8 +48,8 @@ export const SpellsSection = observer(function SpellsSection() {
   const uiStore = useUIStore();
   const char = characterStore.activeCharacter!;
   const profBonus = getProficiencyBonus(char.level);
-  const [addingForLevel, setAddingForLevel] = useState<number | null>(null);
   const [expandedSpell, setExpandedSpell] = useState<string | null>(null);
+  const [spellcastingOpen, setSpellcastingOpen] = useState(false);
 
   const spellAbilityMod = char.spellcastingAbility
     ? getAbilityModifier(char.abilityScores[char.spellcastingAbility])
@@ -84,160 +84,214 @@ export const SpellsSection = observer(function SpellsSection() {
     setExpandedSpell((prev) => (prev === index ? null : index));
   }
 
+  function updateSlotLevel(level: number, patch: { used?: number; total?: number }) {
+    const slot = char.spellSlots[level] ?? { total: 0, used: 0 };
+    const next = { ...slot, ...patch };
+    next.used = Math.min(next.used, next.total);
+    characterStore.updateActiveCharacter({
+      spellSlots: { ...char.spellSlots, [level]: next },
+    });
+  }
+
+  const slotLevelsInUse = [1, 2, 3, 4, 5, 6, 7, 8, 9].filter(
+    (l) => (char.spellSlots[l]?.total ?? 0) > 0
+  );
+
   return (
     <>
-      {/* Spellcasting stats + spell slots (merged) */}
-      <SectionCard title="Spellcasting">
-        <div className="flex flex-wrap gap-2">
-          <div className="flex flex-col items-center p-2 bg-base-100 rounded-lg border border-base-300 w-40">
-            <span className="text-xs font-semibold uppercase text-base-content/60">Ability</span>
-            <select
-              value={char.spellcastingAbility}
-              onChange={(e) =>
-                characterStore.updateActiveCharacter({
-                  spellcastingAbility: e.target.value as AbilityScoreKey | '',
-                })
-              }
-              className="select select-bordered select-sm w-full text-center font-bold mt-1"
+      {/* ── Spellcasting card (collapsible) ──────────────────── */}
+      <div className="card bg-base-200 shadow-sm">
+        <div className="card-body p-4">
+          {/* Header */}
+          <div
+            className="flex items-center justify-between cursor-pointer select-none"
+            onClick={() => setSpellcastingOpen(!spellcastingOpen)}
+          >
+            <h3 className="card-title text-xs font-bold uppercase tracking-wider text-primary">
+              <span className="mr-1 text-base-content/40">{spellcastingOpen ? '▾' : '▸'}</span>
+              Spellcasting
+            </h3>
+            <button
+              className="btn btn-ghost btn-xs gap-1 text-base-content/50"
+              onClick={(e) => { e.stopPropagation(); setSpellcastingOpen(!spellcastingOpen); }}
             >
-              <option value="">None</option>
-              {ABILITY_OPTIONS.map((a) => (
-                <option key={a} value={a}>{ABILITY_SCORE_NAMES[a]}</option>
-              ))}
-            </select>
+              <span>{spellcastingOpen ? 'Done' : 'Edit'}</span>
+            </button>
           </div>
 
-          <div className="flex flex-col items-center p-2 bg-base-100 rounded-lg border border-base-300 w-32 group">
-            <span className="text-xs font-semibold uppercase text-base-content/60">Save DC</span>
-            <div className="flex items-stretch mt-1 rounded-lg border border-transparent group-hover:border-base-300 overflow-hidden transition-colors">
-              <button
-                className="px-2 py-1 bg-base-300 hover:bg-base-content/20 text-sm font-bold leading-none opacity-0 group-hover:opacity-100 transition-opacity"
-                onClick={() => characterStore.updateActiveCharacter({ spellSaveDC: displaySaveDC - 1 })}
-              >−</button>
-              <NumericInput
-                value={displaySaveDC}
-                onCommit={(v) => characterStore.updateActiveCharacter({ spellSaveDC: v })}
-                allowEmpty
-                className="w-10 text-center text-sm font-semibold bg-base-100 border-x border-transparent group-hover:border-base-300 focus:outline-none py-1"
-              />
-              <button
-                className="px-2 py-1 bg-base-300 hover:bg-base-content/20 text-sm font-bold leading-none opacity-0 group-hover:opacity-100 transition-opacity"
-                onClick={() => characterStore.updateActiveCharacter({ spellSaveDC: displaySaveDC + 1 })}
-              >+</button>
-            </div>
-          </div>
-
-          <div className="flex flex-col items-center p-2 bg-base-100 rounded-lg border border-base-300 w-32 group">
-            <span className="text-xs font-semibold uppercase text-base-content/60">Atk Bonus</span>
-            <div className="flex items-stretch mt-1 rounded-lg border border-transparent group-hover:border-base-300 overflow-hidden transition-colors">
-              <button
-                className="px-2 py-1 bg-base-300 hover:bg-base-content/20 text-sm font-bold leading-none opacity-0 group-hover:opacity-100 transition-opacity"
-                onClick={() => characterStore.updateActiveCharacter({ spellAttackBonus: displayAttackBonus - 1 })}
-              >−</button>
-              <NumericInput
-                value={displayAttackBonus}
-                onCommit={(v) => characterStore.updateActiveCharacter({ spellAttackBonus: v })}
-                allowEmpty
-                className="w-10 text-center text-sm font-semibold bg-base-100 border-x border-transparent group-hover:border-base-300 focus:outline-none py-1"
-              />
-              <button
-                className="px-2 py-1 bg-base-300 hover:bg-base-content/20 text-sm font-bold leading-none opacity-0 group-hover:opacity-100 transition-opacity"
-                onClick={() => characterStore.updateActiveCharacter({ spellAttackBonus: displayAttackBonus + 1 })}
-              >+</button>
-            </div>
-          </div>
-
-          <div className="flex flex-col items-center p-2 bg-base-100 rounded-lg border border-base-300 w-32 group">
-            <span className="text-xs font-semibold uppercase text-base-content/60">Max Prepared</span>
-            <div className="flex items-stretch mt-1 rounded-lg border border-transparent group-hover:border-base-300 overflow-hidden transition-colors">
-              <button
-                className="px-2 py-1 bg-base-300 hover:bg-base-content/20 text-sm font-bold leading-none opacity-0 group-hover:opacity-100 transition-opacity"
-                onClick={() => {
-                  const current = char.maxPreparedSpells ?? 0;
-                  characterStore.updateActiveCharacter({ maxPreparedSpells: Math.max(0, current - 1) });
-                }}
-              >−</button>
-              <NumericInput
-                value={char.maxPreparedSpells}
-                onCommit={(v) => characterStore.updateActiveCharacter({ maxPreparedSpells: v })}
-                allowEmpty
-                min={0}
-                placeholder="—"
-                className="w-10 text-center text-sm font-semibold bg-base-100 border-x border-transparent group-hover:border-base-300 focus:outline-none py-1"
-              />
-              <button
-                className="px-2 py-1 bg-base-300 hover:bg-base-content/20 text-sm font-bold leading-none opacity-0 group-hover:opacity-100 transition-opacity"
-                onClick={() => {
-                  const current = char.maxPreparedSpells ?? 0;
-                  characterStore.updateActiveCharacter({ maxPreparedSpells: current + 1 });
-                }}
-              >+</button>
-            </div>
-          </div>
-
-          <div className={`flex flex-col items-center p-2 rounded-lg border w-32 ${
-            char.maxPreparedSpells != null && preparedCount > char.maxPreparedSpells
-              ? 'bg-error/10 border-error text-error'
-              : 'bg-base-100 border-base-300'
-          }`}>
-            <span className="text-xs font-semibold uppercase text-base-content/60">Prepared</span>
-            <span className="text-2xl font-bold mt-0.5">{preparedCount}</span>
-            {char.maxPreparedSpells != null && (
-              <span className="text-xs text-base-content/40">of {char.maxPreparedSpells}</span>
-            )}
-          </div>
-        </div>
-
-        {/* Spell slots */}
-        <div className="flex items-center gap-2 mt-3 mb-2">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-base-content/40">Spell Slots</span>
-          <div className="flex-1 border-t border-base-300" />
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((level) => {
-            const slot = char.spellSlots[level] ?? { total: 0, used: 0 };
-            const updateSlot = (patch: { used?: number; total?: number }) => {
-              const next = { ...slot, ...patch };
-              next.used = Math.min(next.used, next.total);
-              characterStore.updateActiveCharacter({
-                spellSlots: { ...char.spellSlots, [level]: next },
-              });
-            };
-            return (
-              <div key={level} className="flex flex-col items-center p-1.5 bg-base-100 rounded-lg border border-base-300 w-20 group">
-                <span className="text-[10px] font-semibold uppercase text-base-content/60">{SPELL_LEVEL_LABELS[level]}</span>
-                <div className="flex items-stretch mt-1 rounded border border-transparent group-hover:border-base-300 overflow-hidden transition-colors">
-                  <button
-                    className="px-1 py-0.5 bg-base-300 hover:bg-base-content/20 text-xs font-bold leading-none opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={() => updateSlot({ used: Math.max(0, slot.used - 1) })}
-                  >−</button>
-                  <NumericInput
-                    value={slot.used}
-                    onCommit={(v) => updateSlot({ used: v ?? 0 })}
-                    min={0}
-                    className="w-7 text-center text-sm font-semibold bg-base-100 border-x border-transparent group-hover:border-base-300 focus:outline-none py-0.5"
-                  />
-                  <button
-                    className="px-1 py-0.5 bg-base-300 hover:bg-base-content/20 text-xs font-bold leading-none opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={() => updateSlot({ used: slot.used + 1 })}
-                  >+</button>
-                </div>
-                <div className="w-4 border-t border-base-300 my-0.5" />
-                <NumericInput
-                  value={slot.total}
-                  onCommit={(v) => updateSlot({ total: v ?? 0 })}
-                  min={0}
-                  className="input input-bordered input-xs w-10 text-center text-xs text-base-content/60"
-                />
+          {/* ── Collapsed summary ── */}
+          {!spellcastingOpen && (
+            <div className="mt-2 space-y-2">
+              {/* Stats row */}
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                {char.spellcastingAbility && (
+                  <span className="text-sm font-semibold">
+                    {ABILITY_SCORE_NAMES[char.spellcastingAbility]}
+                  </span>
+                )}
+                <span className="text-xs">
+                  <span className="text-base-content/50">DC </span>
+                  <span className="font-bold">{displaySaveDC}</span>
+                </span>
+                <span className="text-xs">
+                  <span className="text-base-content/50">Atk </span>
+                  <span className="font-bold">{formatModifier(displayAttackBonus)}</span>
+                </span>
+                {(preparedCount > 0 || char.maxPreparedSpells != null) && (
+                  <span className={`text-xs ${char.maxPreparedSpells != null && preparedCount > char.maxPreparedSpells ? 'text-error font-bold' : ''}`}>
+                    <span className="text-base-content/50">Prepared </span>
+                    <span className="font-bold">
+                      {preparedCount}{char.maxPreparedSpells != null ? `/${char.maxPreparedSpells}` : ''}
+                    </span>
+                  </span>
+                )}
               </div>
-            );
-          })}
+
+              {/* Slot pips — interactive: tap to use/restore */}
+              {slotLevelsInUse.length > 0 && (
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-base-content/40 shrink-0">Slots</span>
+                  {slotLevelsInUse.map((level) => {
+                    const slot = char.spellSlots[level] ?? { total: 0, used: 0 };
+                    const remaining = slot.total - slot.used;
+                    return (
+                      <span key={level} className="flex items-center gap-1">
+                        <span className="text-[10px] font-semibold text-base-content/50 w-3 text-right">{level}</span>
+                        {slot.total <= 6 ? (
+                          Array.from({ length: slot.total }, (_, i) => {
+                            const isFilled = i < remaining;
+                            return (
+                              <button
+                                key={i}
+                                title={isFilled ? 'Use slot' : 'Restore slot'}
+                                className={`w-3 h-3 rounded-full border transition-colors ${
+                                  isFilled
+                                    ? 'bg-primary border-primary hover:bg-primary/60'
+                                    : 'bg-transparent border-base-content/30 hover:border-primary/60'
+                                }`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  updateSlotLevel(level, { used: isFilled ? slot.used + 1 : Math.max(0, slot.used - 1) });
+                                }}
+                              />
+                            );
+                          })
+                        ) : (
+                          <span className="text-xs font-semibold">{remaining}/{slot.total}</span>
+                        )}
+                      </span>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ── Expanded editor ── */}
+          {spellcastingOpen && (
+            <>
+              <div className="flex flex-wrap gap-2 mt-3">
+                <div className="flex flex-col items-center p-2 bg-base-100 rounded-lg border border-base-300 w-40">
+                  <span className="text-xs font-semibold uppercase text-base-content/60">Ability</span>
+                  <select
+                    value={char.spellcastingAbility}
+                    onChange={(e) =>
+                      characterStore.updateActiveCharacter({
+                        spellcastingAbility: e.target.value as AbilityScoreKey | '',
+                      })
+                    }
+                    className="select select-bordered select-sm w-full text-center font-bold mt-1"
+                  >
+                    <option value="">None</option>
+                    {ABILITY_OPTIONS.map((a) => (
+                      <option key={a} value={a}>{ABILITY_SCORE_NAMES[a]}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="flex flex-col items-center p-2 bg-base-100 rounded-lg border border-base-300 w-32 group">
+                  <span className="text-xs font-semibold uppercase text-base-content/60">Save DC</span>
+                  <div className="flex items-stretch mt-1 rounded-lg border border-transparent group-hover:border-base-300 overflow-hidden transition-colors">
+                    <button className="px-2 py-1 bg-base-300 hover:bg-base-content/20 text-sm font-bold leading-none opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => characterStore.updateActiveCharacter({ spellSaveDC: displaySaveDC - 1 })}>−</button>
+                    <NumericInput value={displaySaveDC} onCommit={(v) => characterStore.updateActiveCharacter({ spellSaveDC: v })} allowEmpty
+                      className="w-10 text-center text-sm font-semibold bg-base-100 border-x border-transparent group-hover:border-base-300 focus:outline-none py-1" />
+                    <button className="px-2 py-1 bg-base-300 hover:bg-base-content/20 text-sm font-bold leading-none opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => characterStore.updateActiveCharacter({ spellSaveDC: displaySaveDC + 1 })}>+</button>
+                  </div>
+                </div>
+
+                <div className="flex flex-col items-center p-2 bg-base-100 rounded-lg border border-base-300 w-32 group">
+                  <span className="text-xs font-semibold uppercase text-base-content/60">Atk Bonus</span>
+                  <div className="flex items-stretch mt-1 rounded-lg border border-transparent group-hover:border-base-300 overflow-hidden transition-colors">
+                    <button className="px-2 py-1 bg-base-300 hover:bg-base-content/20 text-sm font-bold leading-none opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => characterStore.updateActiveCharacter({ spellAttackBonus: displayAttackBonus - 1 })}>−</button>
+                    <NumericInput value={displayAttackBonus} onCommit={(v) => characterStore.updateActiveCharacter({ spellAttackBonus: v })} allowEmpty
+                      className="w-10 text-center text-sm font-semibold bg-base-100 border-x border-transparent group-hover:border-base-300 focus:outline-none py-1" />
+                    <button className="px-2 py-1 bg-base-300 hover:bg-base-content/20 text-sm font-bold leading-none opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => characterStore.updateActiveCharacter({ spellAttackBonus: displayAttackBonus + 1 })}>+</button>
+                  </div>
+                </div>
+
+                <div className="flex flex-col items-center p-2 bg-base-100 rounded-lg border border-base-300 w-32 group">
+                  <span className="text-xs font-semibold uppercase text-base-content/60">Max Prepared</span>
+                  <div className="flex items-stretch mt-1 rounded-lg border border-transparent group-hover:border-base-300 overflow-hidden transition-colors">
+                    <button className="px-2 py-1 bg-base-300 hover:bg-base-content/20 text-sm font-bold leading-none opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => characterStore.updateActiveCharacter({ maxPreparedSpells: Math.max(0, (char.maxPreparedSpells ?? 0) - 1) })}>−</button>
+                    <NumericInput value={char.maxPreparedSpells} onCommit={(v) => characterStore.updateActiveCharacter({ maxPreparedSpells: v })} allowEmpty min={0} placeholder="—"
+                      className="w-10 text-center text-sm font-semibold bg-base-100 border-x border-transparent group-hover:border-base-300 focus:outline-none py-1" />
+                    <button className="px-2 py-1 bg-base-300 hover:bg-base-content/20 text-sm font-bold leading-none opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => characterStore.updateActiveCharacter({ maxPreparedSpells: (char.maxPreparedSpells ?? 0) + 1 })}>+</button>
+                  </div>
+                </div>
+
+                <div className={`flex flex-col items-center p-2 rounded-lg border w-32 ${
+                  char.maxPreparedSpells != null && preparedCount > char.maxPreparedSpells
+                    ? 'bg-error/10 border-error text-error'
+                    : 'bg-base-100 border-base-300'
+                }`}>
+                  <span className="text-xs font-semibold uppercase text-base-content/60">Prepared</span>
+                  <span className="text-2xl font-bold mt-0.5">{preparedCount}</span>
+                  {char.maxPreparedSpells != null && (
+                    <span className="text-xs text-base-content/40">of {char.maxPreparedSpells}</span>
+                  )}
+                </div>
+              </div>
+
+              {/* Spell slots */}
+              <div className="flex items-center gap-2 mt-3 mb-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-base-content/40">Spell Slots</span>
+                <div className="flex-1 border-t border-base-300" />
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((level) => {
+                  const slot = char.spellSlots[level] ?? { total: 0, used: 0 };
+                  return (
+                    <div key={level} className="flex flex-col items-center p-1.5 bg-base-100 rounded-lg border border-base-300 w-20 group">
+                      <span className="text-[10px] font-semibold uppercase text-base-content/60">{SPELL_LEVEL_LABELS[level]}</span>
+                      <div className="flex items-stretch mt-1 rounded border border-transparent group-hover:border-base-300 overflow-hidden transition-colors">
+                        <button className="px-1 py-0.5 bg-base-300 hover:bg-base-content/20 text-xs font-bold leading-none opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => updateSlotLevel(level, { used: Math.max(0, slot.used - 1) })}>−</button>
+                        <NumericInput value={slot.used} onCommit={(v) => updateSlotLevel(level, { used: v ?? 0 })} min={0}
+                          className="w-7 text-center text-sm font-semibold bg-base-100 border-x border-transparent group-hover:border-base-300 focus:outline-none py-0.5" />
+                        <button className="px-1 py-0.5 bg-base-300 hover:bg-base-content/20 text-xs font-bold leading-none opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => updateSlotLevel(level, { used: slot.used + 1 })}>+</button>
+                      </div>
+                      <div className="w-4 border-t border-base-300 my-0.5" />
+                      <NumericInput value={slot.total} onCommit={(v) => updateSlotLevel(level, { total: v ?? 0 })} min={0}
+                        className="input input-bordered input-xs w-10 text-center text-xs text-base-content/60" />
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
         </div>
-      </SectionCard>
+      </div>
 
       {/* View picker */}
       <div className="flex items-center justify-between">
-        <div className="join">
+        <div className="join hidden sm:flex">
           {SPELL_VIEWS.map(({ mode, icon: Icon, label }) => (
             <button
               key={mode}
@@ -250,19 +304,17 @@ export const SpellsSection = observer(function SpellsSection() {
             </button>
           ))}
         </div>
-        {uiStore.spellViewMode !== 'accordion' && (
-          <button
-            className="btn btn-primary btn-sm"
-            onClick={() => { setAddingForLevel(null); uiStore.openModal('spellSearch'); }}
-          >
-            + Add Spell
-          </button>
-        )}
+        <button
+          className="btn btn-primary btn-sm ml-auto sm:ml-0"
+          onClick={() => uiStore.openModal('spellSearch')}
+        >
+          + Add Spell
+        </button>
       </div>
 
-      {/* ── Accordion view (default) ───────────────────────── */}
+      {/* ── Accordion view (desktop only) ──────────────────── */}
       {uiStore.spellViewMode === 'accordion' && (
-        <>
+        <div className="hidden sm:block space-y-4">
           {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((level) => {
             const spellsAtLevel = spellsByLevel.get(level) ?? [];
             return (
@@ -271,14 +323,6 @@ export const SpellsSection = observer(function SpellsSection() {
                 title={SPELL_LEVEL_LABELS[level]}
                 collapsible
                 defaultOpen={spellsAtLevel.length > 0}
-                action={
-                  <button
-                    className="btn btn-primary btn-xs"
-                    onClick={() => { setAddingForLevel(level); uiStore.openModal('spellSearch'); }}
-                  >
-                    + Add
-                  </button>
-                }
               >
                 {spellsAtLevel.length === 0 ? (
                   <p className="text-sm text-base-content/50">No spells at this level.</p>
@@ -309,7 +353,7 @@ export const SpellsSection = observer(function SpellsSection() {
                               {isExpanded ? '▾' : '▸'} {spell.name}
                             </span>
                             {refSpell && visibleCols.length > 0 && (
-                              <span className="flex gap-2 flex-1 min-w-0 overflow-hidden">
+                              <span className="hidden sm:flex gap-2 flex-1 min-w-0 overflow-hidden">
                                 {visibleCols.map((col) => (
                                   <span key={col.key} className="text-xs text-base-content/50 truncate">
                                     {col.getValue(refSpell)}
@@ -317,9 +361,9 @@ export const SpellsSection = observer(function SpellsSection() {
                                 ))}
                               </span>
                             )}
-                            {!refSpell && <span className="flex-1" />}
+                            <span className="flex-1" />
                             <button
-                              className="btn btn-ghost btn-xs text-info shrink-0 tooltip tooltip-left"
+                              className="hidden sm:flex btn btn-ghost btn-xs text-info shrink-0 tooltip tooltip-left"
                               data-tip="Add to attacks"
                               onClick={() =>
                                 characterStore.addAttackFromSpell(spell.name, formatModifier(displayAttackBonus), spell.index)
@@ -353,11 +397,12 @@ export const SpellsSection = observer(function SpellsSection() {
               </SectionCard>
             );
           })}
-        </>
+        </div>
       )}
 
-      {/* ── List view ─────────────────────────────────────── */}
+      {/* ── List view (desktop only) ──────────────────────── */}
       {uiStore.spellViewMode === 'list' && (
+        <div className="hidden sm:block">
         <SectionCard title="All Spells">
           {char.spells.length === 0 ? (
             <p className="text-sm text-base-content/50">No spells added yet.</p>
@@ -392,7 +437,7 @@ export const SpellsSection = observer(function SpellsSection() {
                         {isExpanded ? '▾' : '▸'} {spell.name}
                       </span>
                       {refSpell && visibleCols.length > 0 && (
-                        <span className="flex gap-2 flex-1 min-w-0 overflow-hidden">
+                        <span className="hidden sm:flex gap-2 flex-1 min-w-0 overflow-hidden">
                           {visibleCols.map((col) => (
                             <span key={col.key} className="text-xs text-base-content/50 truncate">
                               {col.getValue(refSpell)}
@@ -400,9 +445,9 @@ export const SpellsSection = observer(function SpellsSection() {
                           ))}
                         </span>
                       )}
-                      {!refSpell && <span className="flex-1" />}
+                      <span className="flex-1" />
                       <button
-                        className="btn btn-ghost btn-xs text-info shrink-0 tooltip tooltip-left"
+                        className="hidden sm:flex btn btn-ghost btn-xs text-info shrink-0 tooltip tooltip-left"
                         data-tip="Add to attacks"
                         onClick={() =>
                           characterStore.addAttackFromSpell(spell.name, formatModifier(displayAttackBonus), spell.index)
@@ -434,15 +479,16 @@ export const SpellsSection = observer(function SpellsSection() {
             </div>
           )}
         </SectionCard>
+        </div>
       )}
 
-      {/* ── Cards view ────────────────────────────────────── */}
-      {uiStore.spellViewMode === 'cards' && (
+      {/* ── Cards view (always on mobile, desktop when selected) ── */}
+      <div className={uiStore.spellViewMode !== 'cards' ? 'sm:hidden' : ''}>
         <SectionCard title="All Spells">
           {char.spells.length === 0 ? (
             <p className="text-sm text-base-content/50">No spells added yet.</p>
           ) : (
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
               {allSpellsSorted.map((spell) => {
                 const refSpell = getSpellByName(spell.name);
                 const school = refSpell ? refSpell.properties.School as string : null;
@@ -460,27 +506,28 @@ export const SpellsSection = observer(function SpellsSection() {
                 return (
                   <div
                     key={spell.index}
-                    className="bg-base-100 border border-base-300 rounded-lg p-3 flex flex-col gap-1.5 group shadow-sm hover:border-primary/50 hover:shadow-md transition-all cursor-pointer"
+                    className="bg-base-100 border border-base-300 rounded-lg p-3 flex flex-col gap-2 group shadow-sm hover:border-primary/50 hover:shadow-md transition-all cursor-pointer"
                     onClick={() => toggleExpanded(spell.index)}
                   >
-                    {/* Top row: level badge + actions */}
-                    <div className="flex items-start justify-between gap-1">
-                      <div className="flex items-center gap-1.5">
-                        {spell.level > 0 && (
-                          <input
-                            type="checkbox"
-                            checked={spell.prepared}
-                            onChange={() => characterStore.toggleSpellPrepared(spell.index)}
-                            onClick={(e) => e.stopPropagation()}
-                            className="checkbox checkbox-xs checkbox-primary"
-                            title="Prepared"
-                          />
-                        )}
-                        {levelBadge(spell.level)}
-                      </div>
+                    {/* Main row: prepared · level · name · actions */}
+                    <div className="flex items-center gap-2">
+                      {spell.level > 0 && (
+                        <input
+                          type="checkbox"
+                          checked={spell.prepared}
+                          onChange={() => characterStore.toggleSpellPrepared(spell.index)}
+                          onClick={(e) => e.stopPropagation()}
+                          className="checkbox checkbox-xs checkbox-primary shrink-0"
+                          title="Prepared"
+                        />
+                      )}
+                      {levelBadge(spell.level)}
+                      <span className="font-semibold text-sm flex-1 min-w-0">
+                        {isExpanded ? '▾' : '▸'} {spell.name}
+                      </span>
                       <div className="flex items-center gap-0.5 shrink-0">
                         <button
-                          className="btn btn-ghost btn-xs text-info opacity-0 group-hover:opacity-100 transition-opacity tooltip tooltip-left"
+                          className="hidden sm:flex btn btn-ghost btn-xs text-info opacity-0 group-hover:opacity-100 transition-opacity tooltip tooltip-left"
                           data-tip="Add to attacks"
                           onClick={(e) => { e.stopPropagation(); characterStore.addAttackFromSpell(spell.name, formatModifier(displayAttackBonus), spell.index); }}
                         >
@@ -496,29 +543,20 @@ export const SpellsSection = observer(function SpellsSection() {
                       </div>
                     </div>
 
-                    {/* Spell name */}
-                    <span
-                      className="font-semibold text-sm leading-tight hover:text-primary"
-                    >
-                      {isExpanded ? '▾' : '▸'} {spell.name}
-                    </span>
-
-                    {/* School */}
-                    {school && (
-                      <span className="text-xs text-base-content/50 italic">{school}</span>
+                    {/* Stats row: school · casting time · range · tags */}
+                    {(school || castingTime || range || concentration || ritual) && (
+                      <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-base-content/50">
+                        {school && <span className="italic">{school}</span>}
+                        {castingTime && <span>{castingTime}</span>}
+                        {range && <span>{range}</span>}
+                        {concentration && <span className="text-warning font-medium">Conc.</span>}
+                        {ritual && <span className="text-info font-medium">Ritual</span>}
+                      </div>
                     )}
-
-                    {/* Key stats */}
-                    <div className="flex flex-wrap gap-x-2 gap-y-0.5 text-xs text-base-content/60">
-                      {castingTime && <span>{castingTime}</span>}
-                      {range && <span>{range}</span>}
-                      {concentration && <span className="text-warning font-medium">Conc.</span>}
-                      {ritual && <span className="text-info font-medium">Ritual</span>}
-                    </div>
 
                     {/* Expanded detail */}
                     {isExpanded && (
-                      <div className="mt-1 pt-2 border-t border-base-300">
+                      <div className="pt-2 border-t border-base-300">
                         {refSpell
                           ? <SpellDetail spell={refSpell} />
                           : <p className="text-xs text-base-content/50 italic">No additional details available.</p>
@@ -531,9 +569,9 @@ export const SpellsSection = observer(function SpellsSection() {
             </div>
           )}
         </SectionCard>
-      )}
+      </div>
 
-      <SpellSearchModal levelFilter={addingForLevel} />
+      <SpellSearchModal />
     </>
   );
 });

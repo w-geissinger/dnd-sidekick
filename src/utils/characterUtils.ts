@@ -100,6 +100,15 @@ export const ABILITY_SCORE_NAMES: Record<AbilityScoreKey, string> = {
   cha: 'Charisma',
 };
 
+export const ABILITY_SCORE_ABBR: Record<AbilityScoreKey, string> = {
+  str: 'STR',
+  dex: 'DEX',
+  con: 'CON',
+  int: 'INT',
+  wis: 'WIS',
+  cha: 'CHA',
+};
+
 export const ALIGNMENTS = [
   'Lawful Good', 'Neutral Good', 'Chaotic Good',
   'Lawful Neutral', 'True Neutral', 'Chaotic Neutral',
