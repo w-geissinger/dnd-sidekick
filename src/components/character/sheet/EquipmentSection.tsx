@@ -317,7 +317,7 @@ export const EquipmentSection = observer(function EquipmentSection() {
                       {/* Actions */}
                       <div className="flex items-center gap-0.5 shrink-0">
                         <button
-                          className="hidden sm:flex btn btn-ghost btn-xs text-info tooltip tooltip-left"
+                          className="btn btn-ghost btn-xs text-info tooltip tooltip-left"
                           data-tip="Add to attacks"
                           onClick={() => characterStore.addAttackFromItem(item.name, item.id)}
                         >

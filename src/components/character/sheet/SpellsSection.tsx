@@ -527,14 +527,14 @@ export const SpellsSection = observer(function SpellsSection() {
                       </span>
                       <div className="flex items-center gap-0.5 shrink-0">
                         <button
-                          className="hidden sm:flex btn btn-ghost btn-xs text-info opacity-0 group-hover:opacity-100 transition-opacity tooltip tooltip-left"
+                          className="btn btn-ghost btn-xs text-info tooltip tooltip-left"
                           data-tip="Add to attacks"
                           onClick={(e) => { e.stopPropagation(); characterStore.addAttackFromSpell(spell.name, formatModifier(displayAttackBonus), spell.index); }}
                         >
                           <Crosshair2 className="w-3 h-3" />
                         </button>
                         <button
-                          className="btn btn-ghost btn-xs text-error opacity-0 group-hover:opacity-100 transition-opacity tooltip tooltip-left"
+                          className="btn btn-ghost btn-xs text-error tooltip tooltip-left"
                           data-tip="Remove spell"
                           onClick={(e) => { e.stopPropagation(); characterStore.removeSpell(spell.index); }}
                         >
