@@ -89,3 +89,24 @@ input[type="number"] {
   background: var(--color-base-100);
   padding: 1rem;
 }
+
+/* ── Mobile / touch device overrides ────────────────────── */
+
+/* On touch devices, always show elements that are normally
+   only visible on hover (stepper buttons, card actions, etc.) */
+@media (pointer: coarse) {
+  .group-hover\:opacity-100 {
+    opacity: 1 !important;
+  }
+}
+
+/* Larger tap targets for folder tabs on touch */
+@media (pointer: coarse) {
+  .folder-tab {
+    padding: 0.65rem 1.1rem;
+  }
+
+  .side-tab {
+    padding: 0.65rem 1rem;
+  }
+}

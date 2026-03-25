@@ -25,7 +25,7 @@ export const CharacterHeader = observer(function CharacterHeader() {
   return (
     <div className="mb-4">
       {/* Character name row */}
-      <div className="flex items-center gap-3 mb-3">
+      <div className="flex items-center gap-3 mb-3 min-w-0">
         {editingName ? (
           <input
             type="text"
@@ -34,11 +34,11 @@ export const CharacterHeader = observer(function CharacterHeader() {
             onBlur={saveName}
             onKeyDown={(e) => e.key === 'Enter' && (e.target as HTMLInputElement).blur()}
             autoFocus
-            className="input input-bordered input-sm text-2xl font-bold w-64"
+            className="input input-bordered input-sm text-xl font-bold flex-1 min-w-0 max-w-64"
           />
         ) : (
           <h2
-            className="text-2xl font-bold cursor-pointer hover:text-primary transition-colors"
+            className="text-xl sm:text-2xl font-bold cursor-pointer hover:text-primary transition-colors truncate min-w-0"
             onClick={() => { setNameValue(char.name); setEditingName(true); }}
             title="Click to edit name"
           >
@@ -46,14 +46,13 @@ export const CharacterHeader = observer(function CharacterHeader() {
           </h2>
         )}
         <button
-          className={`btn btn-sm btn-circle btn-ghost ${char.inspiration ? 'text-warning' : 'text-base-content/30'}`}
+          className={`btn btn-sm btn-circle btn-ghost shrink-0 ${char.inspiration ? 'text-warning' : 'text-base-content/30'}`}
           onClick={() => characterStore.updateActiveCharacter({ inspiration: !char.inspiration })}
           title={char.inspiration ? 'Inspired!' : 'No inspiration'}
         >
           {char.inspiration ? <StarFill className="w-5 h-5" /> : <Star className="w-5 h-5" />}
         </button>
-        <div className="flex-1" />
-        <div className="flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-2 shrink-0">
           <div className="badge badge-primary badge-lg font-bold gap-1">
             Prof {formatModifier(profBonus)}
           </div>
@@ -61,7 +60,7 @@ export const CharacterHeader = observer(function CharacterHeader() {
       </div>
 
       {/* Character details row */}
-      <div className="flex flex-wrap items-end gap-2">
+      <div className="flex flex-wrap items-end gap-x-2 gap-y-2">
         <div className="flex flex-col">
           <span className="text-[10px] font-semibold uppercase tracking-wider text-base-content/40 mb-0.5">Class</span>
           <select

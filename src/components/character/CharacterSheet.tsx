@@ -39,9 +39,9 @@ export const CharacterSheet = observer(function CharacterSheet() {
       </div>
 
       {/* Tab row spanning both sidebar and main content */}
-      <div className={`flex shrink-0 ${sidebarOpen ? 'gap-4' : 'gap-0'}`}>
-        {/* Skills tab — aligned above sidebar */}
-        <div className={`shrink-0 transition-all duration-200 flex items-end ${sidebarOpen ? 'w-72' : 'w-auto'}`}>
+      <div className={`flex shrink-0 ${sidebarOpen ? 'sm:gap-4' : ''}`}>
+        {/* Skills tab — on desktop aligns above sidebar width */}
+        <div className={`shrink-0 transition-all duration-200 flex items-end ${sidebarOpen ? 'sm:w-72' : 'w-auto'}`}>
           <button
             className={`side-tab ${sidebarOpen ? 'side-tab-active' : ''}`}
             onClick={() => uiStore.toggleSidebar()}
@@ -52,11 +52,11 @@ export const CharacterSheet = observer(function CharacterSheet() {
         </div>
 
         {/* Main content tabs */}
-        <div className="folder-tabs flex-1 min-w-0">
+        <div className="folder-tabs flex-1 min-w-0 overflow-x-auto">
           {TABS.map((t) => (
             <button
               key={t.key}
-              className={`folder-tab ${tab === t.key ? 'folder-tab-active' : ''}`}
+              className={`folder-tab whitespace-nowrap ${tab === t.key ? 'folder-tab-active' : ''}`}
               onClick={() => uiStore.setActiveTab(t.key)}
             >
               {t.label}
@@ -66,10 +66,23 @@ export const CharacterSheet = observer(function CharacterSheet() {
       </div>
 
       {/* Sidebar + folder content fill remaining height */}
-      <div className={`flex min-h-0 flex-1 pb-4 transition-all duration-200 ${sidebarOpen ? 'gap-4' : 'gap-0'}`}>
-        {/* Collapsible sidebar */}
-        <div className={`shrink-0 transition-all duration-200 overflow-y-auto ${sidebarOpen ? 'w-72' : 'w-0 overflow-hidden'}`}>
-          <div className="w-72 space-y-4">
+      <div className={`relative flex min-h-0 flex-1 pb-4 ${sidebarOpen ? 'sm:gap-4' : ''}`}>
+        {/* Mobile backdrop — closes sidebar when tapping outside */}
+        {sidebarOpen && (
+          <div
+            className="sm:hidden absolute inset-0 z-10 bg-black/30"
+            onClick={() => uiStore.toggleSidebar()}
+          />
+        )}
+
+        {/* Collapsible sidebar — mobile: absolute overlay, desktop: side panel */}
+        <div className={`
+          transition-all duration-200 overflow-y-auto
+          absolute left-0 top-0 bottom-0 z-20 bg-base-100
+          sm:static sm:bg-transparent sm:z-auto
+          ${sidebarOpen ? 'w-72' : 'w-0 overflow-hidden'}
+        `}>
+          <div className="w-72 space-y-4 pt-1">
             <SavingThrows />
             <SkillsList />
           </div>
@@ -81,11 +94,11 @@ export const CharacterSheet = observer(function CharacterSheet() {
             <div className="space-y-4">
               {tab === 'combat' && (
                 <>
-                  <div className="flex gap-4 items-stretch">
+                  <div className="flex flex-col sm:flex-row gap-4 items-stretch">
                     <div className="flex-1 min-w-0">
                       <CombatStats />
                     </div>
-                    <div className="shrink-0">
+                    <div className="sm:shrink-0">
                       <DeathSaves />
                     </div>
                   </div>

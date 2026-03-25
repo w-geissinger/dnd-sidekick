@@ -61,19 +61,19 @@ export const SpellSearchModal = observer(function SpellSearchModal({ levelFilter
       <div className="modal-box max-w-5xl h-[70vh] flex flex-col">
         <h3 className="font-bold text-lg mb-3 shrink-0">Search Spells</h3>
 
-        <div className="flex gap-2 mb-3 shrink-0">
+        <div className="flex flex-wrap gap-2 mb-3 shrink-0">
           <input
             type="text"
             value={query}
             onChange={(e) => { setQuery(e.target.value); setSelectedSpell(null); }}
-            className="input input-bordered flex-1"
+            className="input input-bordered flex-1 min-w-40"
             placeholder="Search spells by name..."
             autoFocus
           />
           <select
             value={level ?? ''}
             onChange={(e) => setLevel(e.target.value === '' ? undefined : parseInt(e.target.value))}
-            className="select select-bordered"
+            className="select select-bordered w-full sm:w-auto"
           >
             <option value="">All Levels</option>
             <option value="0">Cantrip</option>

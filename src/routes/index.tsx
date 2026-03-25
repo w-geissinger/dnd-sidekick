@@ -46,7 +46,7 @@ const HomeComponent = observer(function HomeComponent() {
 
   return (
     <div className="container mx-auto p-6 max-w-5xl">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-wrap items-center justify-between gap-y-3 mb-6">
         <h1 className="text-2xl font-bold">Your Characters</h1>
         <div className="flex gap-2">
           <button
@@ -185,21 +185,21 @@ function CharacterListRow({
 
   return (
     <div
-      className="flex items-center gap-4 px-4 py-3 bg-base-200 rounded-lg border border-base-300 hover:bg-base-300/50 cursor-pointer transition-colors group"
+      className="flex flex-wrap items-center gap-x-3 gap-y-1.5 px-3 py-3 bg-base-200 rounded-lg border border-base-300 hover:bg-base-300/50 cursor-pointer transition-colors group"
       onClick={onClick}
     >
       <div className="flex-1 min-w-0">
-        <span className="font-semibold">{character.name}</span>
-        <span className="text-sm text-base-content/50 ml-2">
+        <span className="font-semibold truncate block sm:inline">{character.name}</span>
+        <span className="text-sm text-base-content/50 sm:ml-2">
           Lvl {character.level} {character.race} {character.class}
         </span>
       </div>
 
-      <div className="flex items-center gap-3 shrink-0 text-xs">
+      <div className="flex items-center gap-3 shrink-0 text-xs ml-auto">
         <span className="font-bold" title="Armor Class">AC {character.armorClass}</span>
         <div className="flex items-center gap-1.5" title="Hit Points">
           <span className="font-semibold">{character.hitPointsCurrent}/{character.hitPointsMax}</span>
-          <div className="w-16 bg-base-300 rounded-full h-1.5">
+          <div className="hidden sm:block w-16 bg-base-300 rounded-full h-1.5">
             <div
               className={`h-1.5 rounded-full ${
                 hpPercent > 50 ? 'bg-success' : hpPercent > 25 ? 'bg-warning' : 'bg-error'
@@ -208,7 +208,7 @@ function CharacterListRow({
             />
           </div>
         </div>
-        <span title="Speed">{character.speed} ft</span>
+        <span className="hidden sm:inline" title="Speed">{character.speed} ft</span>
       </div>
 
       <div className="flex gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">

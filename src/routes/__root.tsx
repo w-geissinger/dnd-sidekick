@@ -63,18 +63,18 @@ const Navbar = observer(function Navbar() {
           />
           <text x="32" y="37" textAnchor="middle" fontSize="10" fontWeight="bold" className="fill-primary-content">20</text>
         </svg>
-        <span className="text-xl font-bold">Wayne's DnD Sidekick</span>
+        <span className="text-xl font-bold"><span className="hidden sm:inline">Wayne's </span>DnD Sidekick</span>
       </div>
       <div className="flex-none flex items-center gap-1">
         <Link to="/" className="btn btn-ghost btn-sm gap-1.5">
-          <HouseDoorFill className="w-4 h-4" /> Home
+          <HouseDoorFill className="w-4 h-4" /> <span className="hidden sm:inline">Home</span>
         </Link>
         <Link to="/about" className="btn btn-ghost btn-sm gap-1.5">
-          <InfoCircleFill className="w-4 h-4" /> About
+          <InfoCircleFill className="w-4 h-4" /> <span className="hidden sm:inline">About</span>
         </Link>
         <div className="dropdown dropdown-end">
           <div tabIndex={0} role="button" className="btn btn-ghost btn-sm gap-1.5">
-            <PaletteFill className="w-4 h-4" /> <span className="capitalize">{uiStore.theme}</span>
+            <PaletteFill className="w-4 h-4" /> <span className="hidden sm:inline capitalize">{uiStore.theme}</span>
           </div>
           <div tabIndex={0} className="dropdown-content z-[1] p-2 shadow-lg bg-base-200 rounded-box w-auto min-w-max max-h-80 overflow-y-auto">
             <ul className="menu menu-sm p-0">
